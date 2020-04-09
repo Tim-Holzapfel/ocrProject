@@ -6,10 +6,14 @@
 #' @import dplyr
 #' @import purrr
 #' @import DescTools
-
-
+#' @import backports
 
 rm(list = ls())
+
+library(magrittr)
+
+index <- new.env(parent = emptyenv())
+
 
 #' excel_count
 #'
@@ -178,7 +182,7 @@ create_header <- function() {
 
   header[which(header$Ruler_ref == ""), "Ruler_ref"] <- NA
 
-  index_empty <- header %>%
+  index_header <- header %>%
     with(
       which(
         (!is.na(ID) & is.na(Period) & is.na(Ruler_ref)) |
@@ -186,7 +190,7 @@ create_header <- function() {
       )
     )
 
-  header <- header %>% dplyr::slice(index_empty) %>%
+  header <- header %>% dplyr::slice(index_header) %>%
     dplyr::select(Region = ID, Country = Ruler_ref, N, Excel_path, Continent, Startpage, Endpage)
 
 
@@ -209,565 +213,102 @@ create_header <- function() {
 
   header$Page %<>% as.integer()
 
+  print(assertthat::validate_that(all(header$Page >= header$Startpage & header$Page <= header$Endpage),
+                            msg = "Warning: Not all of the header pages are in their right place!"))
+
+  # Once the number has been extracted from the left adn right header it can or should be removed
+
+  header$Region <- stringr::str_remove(header$Region, "[0-9]+") %>% trimws()
+
+  header$Country <- stringr::str_remove(header$Country, "[0-9]+") %>% trimws()
+
+  index$header <- header[["N"]]
+
+  return(header)
+
 }
 
-#
-# excel_files <- desc_file()
-#
-# setion <- create_sheet()
-#
-# header <- create_header()
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# # Once the number has been extracted from the left adn right header it can or should be removed
-#
-# header$Region <- stringr::str_remove(header$Region, "[0-9]+") %>% trimws()
-#
-# header$Country <- stringr::str_remove(header$Country, "[0-9]+") %>% trimws()
-#
-# header <- header[order(header$Continent, header$Page, decreasing = FALSE), ]
-#
-# return(header)
-#
-#
-#
-#
-#
-#
-#
-# assertthat::validate_that()
-#
-#
-#
-# library(DescTools)
-#
-#
-# all(header$Page %[]% c(header$Startpage, header$Endpage))
-#
-#
-#
-#
-# index <- !(header$Page >= header$Startpage & header$Page <= header$Endpage)
-#
-# header2 <- header[index, ]
-#
-#
-#
-#
-#
-#
-#
-#
-# header$Page %[]% c(header$Startpage, header$Endpage)
-#
-# header$Page[1] %[]% c(header$Startpage[1], header$Endpage[1])
-#
 
 
 
 
-#
-#
-#
-#   sheet %<>% left_join(
-#     headers %>%
-#       select("Region", "Country", "N", "Page", "Excel_file"),
-#     by = "N"
-#   ) %>% select(-c("Ruler_ref"))
-#
-#
-#   sheet$Page %<>%
-#     zoo::na.locf() %>%
-#     as.integer()
-#
-#
-#   sheet <- sheet[order(sheet$Page), ]
-#
-#
-#   sheet$Country %<>%
-#     zoo::na.locf(na.rm = F) %>%
-#     zoo::na.locf(na.rm = F, fromLast = T) %>%
-#     str_squish()
-#
-#
-#   sheet$Region %<>%
-#     zoo::na.locf(na.rm = F) %>%
-#     zoo::na.locf(na.rm = F, fromLast = T) %>%
-#     str_squish()
-#
-#
-#   sheet$Excel_file %<>%
-#     zoo::na.locf()
-#
-#
-#   sheet$ID %<>%
-#     str_squish()
-#
-#
-#   sheet$Period %<>%
-#     str_squish()
-#
-#
-#   sheet$Ruler %<>%
-#     str_squish()
-#
-#
-#   sheet <- sheet[-index_empty, ]
-#
-#
-#   header_sheet <- paste("header_sheet", i, sep = "")
-#
-#
-#   excel_sheet <- paste("excel_sheet", i, sep = "")
-#
-#
-#   assign(header_sheet, headers)
-#
-#
-#   assign(excel_sheet, sheet)
-#
-#
-#
-#
-#
-#
-#
-#
-#
+#' Creating the final state of the excel files in R form
+#'
+#' @return
+#' @export
+#'
+#' @examples
+create_final_sheet <- function() {
+
+  # the function "create_header" is called twice, not the most efficient way. Maybe should change it
+  header <- create_header()
+
+  sheet <- create_sheet()
 
 
+  sheet_final <- dplyr::left_join(sheet, header[, c("Region", "Country", "N", "Page"), by = "N"])
+
+  sheet_final$Page <- zoo::na.locf(sheet_final$Page, na.rm = FALSE)
+
+  sheet_final$Page <- sheet_final$Page %>% as.integer()
+
+  sheet_final$Startpage <- sheet_final$Startpage %>% as.integer()
+
+  sheet_final$Endpage <- sheet_final$Endpage %>% as.integer()
 
 
+  # Write test to make sure all of the variables have the right data type
 
+  type <- apply(sheet_final, 2, typeof)
 
+  # First we apply the classical "last observation forward" in classical, cascading form
 
+  sheet_final$Region <- zoo::na.locf(sheet_final$Region, na.rm = FALSE)
 
+  sheet_final$Country <- zoo::na.locf(sheet_final$Country, na.rm = FALSE)
 
+  # Depending on the current situation, either Region or Country will have started with missing entries which
+  # means that the first rows of either Region or Country will still contain missing values. For this reason,
+  # the same operation as before is applied but this time backwards, so the last non-missing observation is carried backward
+  # rather than forward
 
+  sheet_final$Region <- zoo::na.locf(sheet_final$Region, na.rm = FALSE, fromLast = TRUE)
 
+  sheet_final$Country <- zoo::na.locf(sheet_final$Country, na.rm = FALSE, fromLast = TRUE)
 
+  # The variables ID and especially Ruler usually do not only contain leading and trailing white spaces but
+  # sometimes also multiple white spaces between the indiviual words. str_squish helps replacing them by a single white space
 
+  sheet_final$Period <-  stringr::str_squish(sheet_final$Period)
 
+  sheet_final$Ruler <- stringr::str_squish(sheet_final$Ruler)
 
+  # Dropping the rows that used to contain the headers since the content of the headers has been assigned to
 
+  sheet_final <- sheet_final[-index$header, ]
 
+  # Very important step to assure that all the pages are in their right order (they usualyl are not)
 
+  sheet_final <- sheet_final[order(sheet_final$Continent, sheet_final$Page, decreasing = FALSE), ]
 
+  # ABBYY 15 usually inserts a white space between page breaks. These empty rows should be dropped
 
+  index_empty <- which(is.na(sheet_final$ID) & is.na(sheet_final$Period) & is.na(sheet_final$Ruler))
 
+  sheet_final <- sheet_final[-index_empty, ]
 
+  # N is not correct anymore since the rows have been shifted and dropped
 
+  sheet_final <- sheet_final %>% dplyr::select(-c("N"))
 
+  saveRDS(sheet_final, file = "data/01_excel_concat.RDS")
 
+  return(sheet_final)
 
+}
 
+create_final_sheet()
 
-
-
-
-
-#
-#
-#
-#
-#
-# # Modifying Excel Sheets --------------------------------------------------
-#
-#
-#
-#
-#
-#   if (length(names(sheet)) <= 3) {
-#     sheet$References <- as.character(NA)
-#   }
-#
-#   names(sheet) <- c("ID", "Period", "Ruler", "References")
-#
-#   sheet$N <- 1:dim(sheet)[1]
-#
-#   sheet <- sheet %>% unite("Ruler_ref", c("Ruler", "References"), na.rm = T, remove = F, sep = " ")
-#
-#   sheet[which(sheet$Ruler_ref == ""), "Ruler_ref"] <- NA
-#
-#
-#   index_empty <- sheet %>%
-#     select("ID", "Period", "Ruler_ref") %>%
-#     with(
-#       which(
-#         (!is.na(ID) & is.na(Period) & is.na(Ruler_ref)) |
-#           (is.na(ID) & is.na(Period) & !is.na(Ruler_ref))
-#       )
-#     )
-#
-#   index_empty %>%
-#     sheet[., ] %>%
-#     select(c("ID", "Ruler_ref", "N")) %>%
-#     magrittr::set_names(c("Region", "Country", "N")) -> headers
-#
-#
-#   headers %<>% dplyr::filter(
-#     (stri_detect_regex(Country, "[A-z ]+[0-9]+$") |
-#        stri_detect_regex(Region, "^[0-9]+[A-z ]+"))
-#   )
-#
-#
-#   headers$Page <- unite(headers, "Page", c("Region", "Country"), na.rm = T) %>%
-#     `[[`("Page") %>%
-#     str_extract("[0-9]+") %>%
-#     as.integer()
-#
-#
-#   headers <- tibble::tibble(
-#     Page = headers$Page,
-#     N = headers$N,
-#     Excel_file = excel_files$Excel_file[i],
-#     Path = excel_files$value[i],
-#     Sheet = i,
-#     Region = str_remove(headers$Region, "[0-9]+"),
-#     Country = str_remove(headers$Country, "[0-9]+"),
-#     .name_repair = "minimal"
-#   )
-#
-#
-#   sheet %<>% left_join(
-#     headers %>%
-#       select("Region", "Country", "N", "Page", "Excel_file"),
-#     by = "N"
-#   ) %>% select(-c("Ruler_ref"))
-#
-#
-#   sheet$Page %<>%
-#     zoo::na.locf() %>%
-#     as.integer()
-#
-#
-#   sheet <- sheet[order(sheet$Page), ]
-#
-#
-#   sheet$Country %<>%
-#     zoo::na.locf(na.rm = F) %>%
-#     zoo::na.locf(na.rm = F, fromLast = T) %>%
-#     str_squish()
-#
-#
-#   sheet$Region %<>%
-#     zoo::na.locf(na.rm = F) %>%
-#     zoo::na.locf(na.rm = F, fromLast = T) %>%
-#     str_squish()
-#
-#
-#   sheet$Excel_file %<>%
-#     zoo::na.locf()
-#
-#
-#   sheet$ID %<>%
-#     str_squish()
-#
-#
-#   sheet$Period %<>%
-#     str_squish()
-#
-#
-#   sheet$Ruler %<>%
-#     str_squish()
-#
-#
-#   sheet <- sheet[-index_empty, ]
-#
-#
-#   header_sheet <- paste("header_sheet", i, sep = "")
-#
-#
-#   excel_sheet <- paste("excel_sheet", i, sep = "")
-#
-#
-#   assign(header_sheet, headers)
-#
-#
-#   assign(excel_sheet, sheet)
-# }
-#
-# header_concat <- lapply(ls(pattern = "header_sheet[0-9]"), get) %>%
-#   rlist::list.stack()
-#
-# rm(list = ls(pattern = "header_sheet[0-9]"))
-#
-#
-# excel_concat <- lapply(ls(pattern = "excel_sheet[0-9]"), get) %>%
-#   rlist::list.stack()
-#
-#
-# rm(list = ls(pattern = "excel_sheet[0-9]"))
-#
-#
-#
-# # gvt <- gvisTable(excel_concat) %>% plot()
-#
-#
-# excel_concat$N <- 1:dim(excel_concat)[1]
-#
-#
-#
-# index_missing <- which(is.na(excel_concat$ID) & is.na(excel_concat$Period) & is.na(excel_concat$Ruler))
-#
-#
-#
-# excel_concat <-  excel_concat[-index_missing, ]
-#
-#
-#
-#
-#
-#
-# saveRDS(excel_concat, file = "data/01_excel_concat.RDS")
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# # Modifying Excel Sheets --------------------------------------------------
-#
-#
-# i <- 17
-#
-# for (i in 1:dim(excel_files)[1]) {
-#   sheet <- readxl::read_xlsx(
-#     path = paste(excel_files[i, 1]),
-#     col_names = FALSE,
-#     sheet = 1,
-#     col_types = "text",
-#     trim_ws = T,
-#     progress = F
-#   )
-#
-#
-#   if (length(names(sheet)) <= 3) {
-#     sheet$References <- as.character(NA)
-#   }
-#
-#   names(sheet) <- c("ID", "Period", "Ruler", "References")
-#
-#   sheet$N <- 1:dim(sheet)[1]
-#
-#   sheet <- sheet %>% unite("Ruler_ref", c("Ruler", "References"), na.rm = T, remove = F, sep = " ")
-#
-#   sheet[which(sheet$Ruler_ref == ""), "Ruler_ref"] <- NA
-#
-#
-#   index_empty <- sheet %>%
-#     select("ID", "Period", "Ruler_ref") %>%
-#     with(
-#       which(
-#         (!is.na(ID) & is.na(Period) & is.na(Ruler_ref)) |
-#           (is.na(ID) & is.na(Period) & !is.na(Ruler_ref))
-#       )
-#     )
-#
-#   index_empty %>%
-#     sheet[., ] %>%
-#     select(c("ID", "Ruler_ref", "N")) %>%
-#     magrittr::set_names(c("Region", "Country", "N")) -> headers
-#
-#
-#   headers %<>% dplyr::filter(
-#     (stri_detect_regex(Country, "[A-z ]+[0-9]+$") |
-#       stri_detect_regex(Region, "^[0-9]+[A-z ]+"))
-#   )
-#
-#
-#   headers$Page <- unite(headers, "Page", c("Region", "Country"), na.rm = T) %>%
-#     `[[`("Page") %>%
-#     str_extract("[0-9]+") %>%
-#     as.integer()
-#
-#
-#   headers <- tibble::tibble(
-#     Page = headers$Page,
-#     N = headers$N,
-#     Excel_file = excel_files$Excel_file[i],
-#     Path = excel_files$value[i],
-#     Sheet = i,
-#     Region = str_remove(headers$Region, "[0-9]+"),
-#     Country = str_remove(headers$Country, "[0-9]+"),
-#     .name_repair = "minimal"
-#   )
-#
-#
-#   sheet %<>% left_join(
-#     headers %>%
-#       select("Region", "Country", "N", "Page", "Excel_file"),
-#     by = "N"
-#   ) %>% select(-c("Ruler_ref"))
-#
-#
-#   sheet$Page %<>%
-#     zoo::na.locf() %>%
-#     as.integer()
-#
-#
-#   sheet <- sheet[order(sheet$Page), ]
-#
-#
-#   sheet$Country %<>%
-#     zoo::na.locf(na.rm = F) %>%
-#     zoo::na.locf(na.rm = F, fromLast = T) %>%
-#     str_squish()
-#
-#
-#   sheet$Region %<>%
-#     zoo::na.locf(na.rm = F) %>%
-#     zoo::na.locf(na.rm = F, fromLast = T) %>%
-#     str_squish()
-#
-#
-#   sheet$Excel_file %<>%
-#     zoo::na.locf()
-#
-#
-#   sheet$ID %<>%
-#     str_squish()
-#
-#
-#   sheet$Period %<>%
-#     str_squish()
-#
-#
-#   sheet$Ruler %<>%
-#     str_squish()
-#
-#
-#   sheet <- sheet[-index_empty, ]
-#
-#
-#   header_sheet <- paste("header_sheet", i, sep = "")
-#
-#
-#   excel_sheet <- paste("excel_sheet", i, sep = "")
-#
-#
-#   assign(header_sheet, headers)
-#
-#
-#   assign(excel_sheet, sheet)
-# }
-#
-# header_concat <- lapply(ls(pattern = "header_sheet[0-9]"), get) %>%
-#   rlist::list.stack()
-#
-# rm(list = ls(pattern = "header_sheet[0-9]"))
-#
-#
-# excel_concat <- lapply(ls(pattern = "excel_sheet[0-9]"), get) %>%
-#   rlist::list.stack()
-#
-#
-# rm(list = ls(pattern = "excel_sheet[0-9]"))
-#
-#
-#
-# # gvt <- gvisTable(excel_concat) %>% plot()
-#
-#
-# excel_concat$N <- 1:dim(excel_concat)[1]
-#
-#
-#
-# index_missing <- which(is.na(excel_concat$ID) & is.na(excel_concat$Period) & is.na(excel_concat$Ruler))
-#
-#
-#
-# excel_concat <-  excel_concat[-index_missing, ]
-#
-#
-#
-#
-#
-#
-# saveRDS(excel_concat, file = "data/01_excel_concat.RDS")
-#
-#
-#
 
 
 

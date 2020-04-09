@@ -14,14 +14,7 @@ LazyData: true
 Imports: 
     zoo,
     stringi,
-	DescTools,
-	dplyr,
-	purrr,
-	readxl,
-	stringr,
-	stringi,
-	tibble,
-	tidyr
+	DescTools
 RoxygenNote: 7.1.0
 Suggests: 
     testthat (>= 2.1.0)
