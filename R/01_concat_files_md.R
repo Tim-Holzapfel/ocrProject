@@ -7,6 +7,7 @@
 #' @import purrr
 #' @import DescTools
 #' @import backports
+#' \lifecycle{stable}
 
 rm(list = ls())
 
@@ -14,6 +15,16 @@ library(magrittr)
 
 index <- new.env(parent = emptyenv())
 
+
+
+install.packages("CodeDepends", dependencies = c("Depends", "Imports", "LinkingTo", "Suggests", "Enhances"),
+                 repos = "https://cloud.r-project.org")
+
+
+path <- "D:/ocrProject/R/01_concat_files_md.R"
+
+
+spelling::spell_check_files(path)
 
 #' excel_count
 #'
@@ -24,7 +35,6 @@ index <- new.env(parent = emptyenv())
 #'
 #' @examples
 excel_count <- function(x) {
-
   dim(readxl::read_xlsx(
     path = paste(x[[1]]),
     sheet = 1,
@@ -32,12 +42,10 @@ excel_count <- function(x) {
     col_types = "text",
     .name_repair = "minimal"
   ))[1]
-  }
+}
 
 
-#' desc_file
-#'
-#' @param input
+#' This filee provides an overview of the individual excel files
 #'
 #' @return
 #' @export
@@ -48,7 +56,7 @@ desc_file <- function() {
   # Combining the individual excel files into one R file
 
   excel_files <- list.files(
-    path = "data/Excel",
+    path = "D:/km/Truhart",
     pattern = "xlsx",
     recursive = T,
     full.names = T
@@ -67,7 +75,7 @@ desc_file <- function() {
     excel_files$value,
     regex = "(?<=\\/)[^\\/\\(]*",
     simplify = T
-  )[, 2:3] %>% trimws()
+  )[, 3:4] %>% trimws()
 
 
   excel_files %<>% dplyr::mutate(
@@ -87,10 +95,7 @@ desc_file <- function() {
   excel_files$cumsum <- cumsum(excel_files$count_entries)
 
   return(excel_files)
-
 }
-
-
 
 #' concat_excel
 #'
@@ -101,22 +106,24 @@ desc_file <- function() {
 #'
 #' @examples
 concat_excel <- function(desc_path, desc_continent, desc_startpage, desc_endpage) {
-
   sheet <- readxl::read_xlsx(
     path = desc_path,
     col_names = FALSE,
     sheet = 1,
     col_types = "text",
     trim_ws = TRUE,
-    .name_repair = "minimal"
+    .name_repair = "universal"
   )
 
   # Not all of the excel files contain a "References" column, since this column was only implemented
   # later on
 
-  if (length(names(sheet)) <= 3) {
+  if (ncol(sheet) <= 3) {
     sheet$References <- as.character(NA)
+  } else if (ncol(sheet) > 4) {
+    sheet <- sheet %>% tidyr::unite("References", 4:ncol(sheet), na.rm = TRUE)
   }
+
 
   names(sheet) <- c("ID", "Period", "Ruler", "References")
 
@@ -129,7 +136,6 @@ concat_excel <- function(desc_path, desc_continent, desc_startpage, desc_endpage
   sheet$Endpage <- desc_endpage
 
   return(sheet)
-
 }
 
 #' create_sheet
@@ -141,7 +147,6 @@ concat_excel <- function(desc_path, desc_continent, desc_startpage, desc_endpage
 #'
 #' @examples
 create_sheet <- function() {
-
   file_desc <- desc_file()
 
 
@@ -149,7 +154,7 @@ create_sheet <- function() {
     desc_path = file_desc[["value"]],
     desc_continent = file_desc[["Continent"]],
     desc_startpage = file_desc[["Startpage"]],
-    desc_endpage =  file_desc[["Endpage"]]
+    desc_endpage = file_desc[["Endpage"]]
   )
 
 
@@ -158,9 +163,7 @@ create_sheet <- function() {
   sheet$N <- 1:dim(sheet)[1]
 
   return(sheet)
-
 }
-
 
 #' create_header
 #'
@@ -190,13 +193,14 @@ create_header <- function() {
       )
     )
 
-  header <- header %>% dplyr::slice(index_header) %>%
+  header <- header %>%
+    dplyr::slice(index_header) %>%
     dplyr::select(Region = ID, Country = Ruler_ref, N, Excel_path, Continent, Startpage, Endpage)
 
 
   header %<>% dplyr::filter(
     (stringi::stri_detect_regex(Country, "[A-z ]+[0-9]+$") |
-       stringi::stri_detect_regex(Region, "^[0-9]+[A-z ]+"))
+      stringi::stri_detect_regex(Region, "^[0-9]+[A-z ]+"))
   )
 
   # Header on the left side: Number is explicitly extracted from the right to prevent missmatches
@@ -213,8 +217,46 @@ create_header <- function() {
 
   header$Page %<>% as.integer()
 
-  print(assertthat::validate_that(all(header$Page >= header$Startpage & header$Page <= header$Endpage),
-                            msg = "Warning: Not all of the header pages are in their right place!"))
+  # Test to check that the page header is valid
+  page_header_test <- (header$Page >= header$Startpage) & (header$Page <= header$Endpage)
+
+  print(assertthat::validate_that(all(page_header_test),
+    msg = "Warning: Not all of the header pages are in their right place!"
+  ))
+
+  wrong_page_index <- which(!page_header_test)
+
+  # Wrong pages
+
+  wrong_header <- header[wrong_page_index, ]
+
+  saveRDS(wrong_header, file = "data/correction_required/wrong_page_header.RDS")
+
+  # The entries with the wrong page header are dropped and need to be corrected
+
+  header <- header[-wrong_page_index, ]
+
+  # Test to check that there are no missing page headers. To check the page increments,
+  # the pages need to be in the right order
+
+  header <- header[order(header$Continent, header$Startpage, header$Endpage, header$Page, decreasing = FALSE), ]
+
+  # Generating "page increment", difference of the page number between one page and the next.
+  # Should be 1 unless adjacent pages are missing.
+
+  header$increment <- header$Page - dplyr::lag(header$Page)
+
+  header$increment[1] <- 1
+
+  # Entries from different continents are usually from different books,
+  # these entries need therefore to be excluded
+
+  header$increment[which(!(header$Continent == dplyr::lag(header$Continent)))] <- 1
+
+
+  pages_missing <- header[which(header$increment != 1), ]
+
+  saveRDS(pages_missing, file = "data/correction_required/pages_missing.RDS")
 
   # Once the number has been extracted from the left adn right header it can or should be removed
 
@@ -225,11 +267,7 @@ create_header <- function() {
   index$header <- header[["N"]]
 
   return(header)
-
 }
-
-
-
 
 
 #' Creating the final state of the excel files in R form
@@ -279,7 +317,7 @@ create_final_sheet <- function() {
   # The variables ID and especially Ruler usually do not only contain leading and trailing white spaces but
   # sometimes also multiple white spaces between the indiviual words. str_squish helps replacing them by a single white space
 
-  sheet_final$Period <-  stringr::str_squish(sheet_final$Period)
+  sheet_final$Period <- stringr::str_squish(sheet_final$Period)
 
   sheet_final$Ruler <- stringr::str_squish(sheet_final$Ruler)
 
@@ -304,11 +342,15 @@ create_final_sheet <- function() {
   saveRDS(sheet_final, file = "data/01_excel_concat.RDS")
 
   return(sheet_final)
-
 }
 
 create_final_sheet()
 
+# header <- create_header()
 
 
 
+
+
+
+excel_files <- desc_file()

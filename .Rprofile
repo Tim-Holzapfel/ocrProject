@@ -1,4 +1,11 @@
 
+tryCatch(startup::startup(), error = function(ex) message(".Rprofile error: ", conditionMessage(ex)))
+
+.First <- function() {
+  Sys.setlocale(category = "LC_ALL", locale = "English_US")
+  Sys.setenv(LANG = "English_US")
+}
+
 # warn on partial matches
 options(
   warnPartialMatchAttr = TRUE,

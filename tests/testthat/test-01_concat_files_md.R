@@ -1,33 +1,10 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
-})
+header <- create_header()
 
+test_that("test that all", {
 
-
-test_that("test that all page headers are within their bounds defined by the excel sheet they originated from", {
-
-
-
+  expect_true(all(header$Page >= header$Startpage & header$Page <= header$Endpage))
 
 })
-
-
-
-
-testthat::expect(
-  ok = all(header$Page >= header$Startpage & header$Page <= header$Endpage),
-  failure_message = "Not all of the header pages are in their right place.")
-
-
-
-
-
-
-
-
-
-
-
 
 
 
