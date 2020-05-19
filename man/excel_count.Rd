@@ -6,6 +6,9 @@
 \usage{
 excel_count(x)
 }
+\arguments{
+\item{x}{An input}
+}
 \description{
 Counting the number of excel sheets currently residing inside the explorer
 }

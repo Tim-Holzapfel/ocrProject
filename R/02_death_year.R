@@ -21,7 +21,7 @@ index <- new.env(parent = emptyenv())
 indicate_deathyear <-
   function() {
 
-    load("R/sysdata.rda")
+    df <- ocrProject::create_final_sheet()
 
     df <-
       df %>%

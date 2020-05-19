@@ -20,17 +20,6 @@ excel_count <-
 
 }
 
-
-# use_package("readxl")
-# use_package("stringr")
-# use_package("stringi")
-# use_package("dplyr")
-# use_package("tidyr")
-# use_package("purrr")
-# use_package("zoo")
-# use_package("usethis")
-
-
 #' This filee provides an overview of the individual excel files
 #'
 #' @name desc_file
@@ -262,7 +251,8 @@ create_header <- function() {
   wrong_header <-
     header[wrong_page_index, ]
 
-  saveRDS(wrong_header, file = "data/correction_required/wrong_page_header.RDS")
+
+  usethis::use_data(wrong_header, overwrite = TRUE)
 
   # The entries with the wrong page header are dropped and need to be corrected
 
@@ -297,7 +287,9 @@ create_header <- function() {
   pages_missing <-
     header[which(header$increment != 1), ]
 
-  saveRDS(pages_missing, file = "data/correction_required/pages_missing.RDS")
+
+  usethis::use_data(pages_missing, overwrite = TRUE)
+
 
   # Once the number has been extracted from the left adn right header it can or should be removed
 
@@ -322,9 +314,11 @@ create_header <- function() {
 #' @name create_final_sheet
 #'
 #' @usage create_final_sheet()
+#' @export
 create_final_sheet <- function() {
 
-  # the function "create_header" is called twice, not the most efficient way. Maybe should change it
+  # TODO the function "create_header" is called twice, not the most efficient way. Maybe should change it
+
   header <-
     create_header()
 
@@ -403,20 +397,9 @@ create_final_sheet <- function() {
 
   sheet_final <- sheet_final %>% dplyr::select(-c("N"))
 
-  df <- sheet_final
-
-  usethis::use_data(df, internal = TRUE, overwrite = TRUE)
-
   return(sheet_final)
 }
 
-# create_final_sheet()
-
-# header <- create_header()
 
 
 
-
-
-
-# excel_files <- desc_file()
