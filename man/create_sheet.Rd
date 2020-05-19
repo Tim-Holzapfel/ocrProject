@@ -2,16 +2,10 @@
 % Please edit documentation in R/01_concat_files_md.R
 \name{create_sheet}
 \alias{create_sheet}
-\title{create_sheet}
+\title{Creating the excel sheet}
 \usage{
 create_sheet()
 }
-\arguments{
-\item{path_input}{}
-}
-\value{
-
-}
 \description{
-create_sheet
+Creating the excel sheet
 }

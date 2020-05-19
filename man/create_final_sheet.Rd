@@ -2,13 +2,10 @@
 % Please edit documentation in R/01_concat_files_md.R
 \name{create_final_sheet}
 \alias{create_final_sheet}
-\title{Creating the final state of the excel files in R form}
+\title{Creates the final data frame}
 \usage{
 create_final_sheet()
 }
-\value{
-
-}
 \description{
-Creating the final state of the excel files in R form
+Creates the final data frame
 }

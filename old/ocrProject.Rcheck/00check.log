@@ -1,0 +1,163 @@
+* using log directory 'D://ocrProject.Rcheck'
+* using R version 3.6.3 (2020-02-29)
+* using platform: x86_64-w64-mingw32 (64-bit)
+* using session charset: ISO8859-1
+* using options '--no-manual --as-cran'
+* checking for file 'ocrProject/DESCRIPTION' ... OK
+* this is package 'ocrProject' version '0.0.0.9000'
+* package encoding: UTF-8
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... WARNING
+Found the following files with non-portable file names:
+  data/Excel/Africa (complete)/N&E&W-Africa (Done)
+  data/Excel/Africa (complete)/S&Equ.-Africa (Done)
+  data/Excel/Asia (17 of 31)/Asia&PacificOceania (7 of 17)
+  data/Excel/Asia (17 of 31)/SouthEast-Asia (Done)
+  data/Excel/Asia (17 of 31)/W-Asia (2 of 7)
+These are not fully portable file names.
+See section 'Package structure' in the 'Writing R Extensions' manual.
+Found the following non-portable file paths:
+  ocrProject/data/Excel/Asia (17 of 31)/Asia&PacificOceania (7 of 17)/Truhart3new.p168to223.EasternAsia.xlsx
+  ocrProject/data/Excel/Asia (17 of 31)/Asia&PacificOceania (7 of 17)/Truhart3new.p224to275.EasternAsia.xlsx
+  ocrProject/data/Excel/Asia (17 of 31)/Asia&PacificOceania (7 of 17)/Truhart3new.p276to333.EasternAsia.xlsx
+  ocrProject/data/Excel/Asia (17 of 31)/SouthEast-Asia (Done)/Truhart3new.p1117to1145.SouthEastAsia.xlsx
+  ocrProject/data/Excel/Asia (17 of 31)/SouthEast-Asia (Done)/Truhart3new.p1142to1157.SouthEastAsia.xlsx
+  ocrProject/data/Excel/Asia (17 of 31)/SouthEast-Asia (Done)/Truhart3new.p1158to1207.SouthEastAsia.xlsx
+  ocrProject/data/Excel/Asia (17 of 31)/SouthEast-Asia (Done)/Truhart3new.p1208to1253.SouthEastAsia.xlsx
+  ocrProject/data/Excel/Asia (17 of 31)/SouthEast-Asia (Done)/Truhart3new.p1254to1291.SouthEastAsia.xlsx
+  ocrProject/data/Excel/Asia (17 of 31)/SouthEast-Asia (Done)/Truhart3new.p1292to1341.SouthEastAsia.xlsx
+  ocrProject/data/Excel/Asia (17 of 31)/SouthEast-Asia (Done)/Truhart3new.p1342to1356.SouthEastAsia.xlsx
+
+Tarballs are only required to store paths of up to 100 bytes and cannot
+store those of more than 256 bytes, with restrictions including to 100
+bytes for the final component.
+See section 'Package structure' in the 'Writing R Extensions' manual.
+* checking whether package 'ocrProject' can be installed ... OK
+* checking installed package size ... NOTE
+  installed size is 89.1Mb
+  sub-directories of 1Mb or more:
+    data  86.5Mb
+    R      2.6Mb
+* checking package directory ... OK
+* checking for future file timestamps ... OK
+* checking DESCRIPTION meta-information ... WARNING
+Non-standard license specification:
+  What license it uses
+Standardizable: FALSE
+Package listed in more than one of Depends, Imports, Suggests, Enhances:
+  'stringi'
+A package should be listed in only one of these fields.
+* checking top-level files ... NOTE
+Non-standard files/directories found at top level:
+  'hidden' 'key'
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... WARNING
+Subdirectory 'data' contains no data sets.
+* checking R files for non-ASCII characters ... WARNING
+Found the following file with non-ASCII characters:
+  02_death_year_md.R
+Portable packages must use only ASCII characters in their R code,
+except perhaps in comments.
+Use \uxxxx escapes for other characters.
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking dependencies in R code ... NOTE
+Package in Depends field not imported from: 'magrittr'
+  These packages need to be imported from (in the NAMESPACE file)
+  for when this namespace is loaded but not attached.
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+create_header: no visible binding for global variable 'ID'
+create_header: no visible binding for global variable 'Period'
+create_header: no visible binding for global variable 'Ruler_ref'
+create_header: no visible binding for global variable 'Excel_path'
+create_header: no visible binding for global variable 'Continent'
+create_header: no visible binding for global variable 'Startpage'
+create_header: no visible binding for global variable 'Endpage'
+create_header: no visible global function definition for '%<>%'
+create_header: no visible binding for global variable 'Country'
+create_header: no visible binding for global variable 'Region'
+desc_file: no visible global function definition for '%<>%'
+subset_ruler: no visible binding for global variable 'ID'
+subset_ruler: no visible binding for global variable 'Ruler'
+subset_ruler: no visible global function definition for '%<>%'
+Undefined global functions or variables:
+  %<>% Continent Country Endpage Excel_path ID Period Region Ruler
+  Ruler_ref Startpage
+* checking Rd files ... NOTE
+prepare_Rd: concat_excel.Rd:12-14: Dropping empty section \value
+prepare_Rd: create_header.Rd:12-14: Dropping empty section \value
+prepare_Rd: create_sheet.Rd:12-14: Dropping empty section \value
+prepare_Rd: desc_file.Rd:12-14: Dropping empty section \value
+prepare_Rd: excel_count.Rd:12-14: Dropping empty section \value
+prepare_Rd: subset_ruler.Rd:12-14: Dropping empty section \value
+* checking Rd metadata ... OK
+* checking Rd line widths ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... WARNING
+Undocumented arguments in documentation object 'concat_excel'
+  'desc_path' 'desc_continent' 'desc_startpage' 'desc_endpage'
+Documented arguments not in \usage in documentation object 'concat_excel':
+  'path_input'
+
+Documented arguments not in \usage in documentation object 'create_header':
+  'path_input'
+
+Documented arguments not in \usage in documentation object 'create_sheet':
+  'path_input'
+
+Documented arguments not in \usage in documentation object 'desc_file':
+  'input'
+
+Functions with \usage entries need to have the appropriate \alias
+entries, and all their arguments documented.
+The \usage entries must correspond to syntactically valid R code.
+See chapter 'Writing R documentation files' in the 'Writing R
+Extensions' manual.
+* checking Rd contents ... WARNING
+Argument items with no description in Rd object 'create_header':
+  'path_input'
+
+Argument items with no description in Rd object 'create_sheet':
+  'path_input'
+
+Argument items with no description in Rd object 'desc_file':
+  'input'
+
+Argument items with no description in Rd object 'excel_count':
+  'x'
+
+Argument items with no description in Rd object 'subset_ruler':
+  'raw_file'
+
+* checking for unstated dependencies in examples ... OK
+* checking contents of 'data' directory ... WARNING
+Files not of a type allowed in a 'data' directory:
+  '01_excel_concat.RDS' '02_death_year.RDS' 'Excel' 'Truhart.dta'
+  'Truhart_Svenja.dta'
+Please use e.g. 'inst/extdata' for non-R data files
+
+* checking data for non-ASCII characters ... OK
+* checking data for ASCII and uncompressed saves ... OK
+* checking examples ... NONE
+* checking for unstated dependencies in 'tests' ... OK
+* checking tests ... OK
+  Running 'testthat.R'
+* checking for detritus in the temp directory ... OK
+* DONE
+Status: 7 WARNINGs, 5 NOTEs

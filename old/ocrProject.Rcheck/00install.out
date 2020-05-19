@@ -1,0 +1,49 @@
+* installing *source* package 'ocrProject' ...
+** using staged installation
+** R
+** data
+*** moving datasets to lazyload DB
+** byte-compile and prepare package for lazy loading
+[1] "Count of periods per Ruler"
+
+    0     1     2     3     4 
+33181 13055   479    21     3 
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+*** arch - i386
+Warning messages:
+1: startup::check(): Environment variable 'R_LIBS_SITE' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+2: startup::check(): Environment variable 'R_LIBS_USER' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+3: startup::check(): Environment variable 'R_ENVIRON_USER' specifies a non-existing startup file ''no_such_file'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_file'') which R will silently ignore 
+4: startup::check(): Environment variable 'R_LIBS_SITE' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+5: startup::check(): Environment variable 'R_LIBS_USER' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+6: startup::check(): Environment variable 'R_ENVIRON_USER' specifies a non-existing startup file ''no_such_file'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_file'') which R will silently ignore 
+*** arch - x64
+Warning messages:
+1: startup::check(): Environment variable 'R_LIBS_SITE' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+2: startup::check(): Environment variable 'R_LIBS_USER' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+3: startup::check(): Environment variable 'R_ENVIRON_USER' specifies a non-existing startup file ''no_such_file'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_file'') which R will silently ignore 
+4: startup::check(): Environment variable 'R_LIBS_SITE' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+5: startup::check(): Environment variable 'R_LIBS_USER' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+6: startup::check(): Environment variable 'R_ENVIRON_USER' specifies a non-existing startup file ''no_such_file'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_file'') which R will silently ignore 
+** testing if installed package can be loaded from final location
+*** arch - i386
+Warning messages:
+1: startup::check(): Environment variable 'R_LIBS_SITE' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+2: startup::check(): Environment variable 'R_LIBS_USER' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+3: startup::check(): Environment variable 'R_ENVIRON_USER' specifies a non-existing startup file ''no_such_file'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_file'') which R will silently ignore 
+4: startup::check(): Environment variable 'R_LIBS_SITE' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+5: startup::check(): Environment variable 'R_LIBS_USER' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+6: startup::check(): Environment variable 'R_ENVIRON_USER' specifies a non-existing startup file ''no_such_file'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_file'') which R will silently ignore 
+*** arch - x64
+Warning messages:
+1: startup::check(): Environment variable 'R_LIBS_SITE' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+2: startup::check(): Environment variable 'R_LIBS_USER' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+3: startup::check(): Environment variable 'R_ENVIRON_USER' specifies a non-existing startup file ''no_such_file'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_file'') which R will silently ignore 
+4: startup::check(): Environment variable 'R_LIBS_SITE' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+5: startup::check(): Environment variable 'R_LIBS_USER' specifies a non-existing folder ''no_such_dir'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_dir'') which R ignores and therefore are not used in .libPaths(). To create this folder, call dir.create("'no_such_dir'", recursive = TRUE) 
+6: startup::check(): Environment variable 'R_ENVIRON_USER' specifies a non-existing startup file ''no_such_file'' (expands to 'D:\ocrProject.Rcheck\00_pkg_src\ocrProject\'no_such_file'') which R will silently ignore 
+** testing if installed package keeps a record of temporary installation path
+* DONE (ocrProject)

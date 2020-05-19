@@ -2,16 +2,10 @@
 % Please edit documentation in R/01_concat_files_md.R
 \name{excel_count}
 \alias{excel_count}
-\title{excel_count}
+\title{Counting the number of excel sheets currently residing inside the explorer}
 \usage{
 excel_count(x)
 }
-\arguments{
-\item{x}{}
-}
-\value{
-
-}
 \description{
-excel_count
+Counting the number of excel sheets currently residing inside the explorer
 }

@@ -2,16 +2,10 @@
 % Please edit documentation in R/01_concat_files_md.R
 \name{create_header}
 \alias{create_header}
-\title{create_header}
+\title{creating the header for the files}
 \usage{
 create_header()
 }
-\arguments{
-\item{path_input}{}
-}
-\value{
-
-}
 \description{
-create_header
+creating the header for the files
 }

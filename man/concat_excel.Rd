@@ -2,16 +2,19 @@
 % Please edit documentation in R/01_concat_files_md.R
 \name{concat_excel}
 \alias{concat_excel}
-\title{concat_excel}
+\title{Concatenating the excel files}
 \usage{
 concat_excel(desc_path, desc_continent, desc_startpage, desc_endpage)
 }
 \arguments{
-\item{path_input}{The list pointing to the path of the excel files that are to be merged}
-}
-\value{
+\item{desc_path}{The list pointing to the path of the excel files that are to be merged}
 
+\item{desc_continent}{The continent of the excel file}
+
+\item{desc_startpage}{The startpage of the excel file}
+
+\item{desc_endpage}{The endpage of th excel file}
 }
 \description{
-concat_excel
+Concatenating the excel files
 }

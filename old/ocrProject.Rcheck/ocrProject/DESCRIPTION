@@ -1,0 +1,24 @@
+Package: ocrProject
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Tim",
+           family = "Holzapfel",
+           role = c("aut", "cre"),
+           email = "TimHolzapfel@outlook.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: What the package does (one paragraph).
+License: What license it uses
+Encoding: UTF-8
+LazyData: true
+Imports: zoo, stringi, DescTools, dplyr, purrr, readxl, stringr,
+        stringi, tibble, tidyr
+RoxygenNote: 7.1.0
+Suggests: testthat (>= 2.1.0)
+Depends: R (>= 3.5.0), magrittr
+Roxygen: list(markdown = TRUE)
+NeedsCompilation: no
+Packaged: 2020-04-08 21:16:22 UTC; Tim
+Author: Tim Holzapfel [aut, cre] (<https://orcid.org/YOUR-ORCID-ID>)
+Maintainer: Tim Holzapfel <TimHolzapfel@outlook.com>
+Built: R 3.6.3; ; 2020-04-08 21:16:33 UTC; windows
