@@ -1,7 +1,4 @@
-#' @import stringr
-#' @import stringi
-#' @import dplyr
-#' \lifecycle{stable}
+
 
 library(magrittr)
 
@@ -18,9 +15,14 @@ rm(list = ls())
 
 
 
-preprocess_data <- function() {
+preprocess_data <-
+  function() {
 
-  df <- readRDS("data/01_excel_concat.RDS") %>%
+  df <- calculate_death_year()
+
+
+
+    readRDS("data/01_excel_concat.RDS") %>%
     dplyr::select("ID", "Period", "Ruler", "References")
 
   df$N <- 1:dim(df)[1]

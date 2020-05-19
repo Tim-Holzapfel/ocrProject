@@ -1,26 +1,11 @@
-#' @import stringr
-#' @import stringi
-#' @import tidyr
-#' @import dplyr
-#' @importFrom magrittr %>%
-#' @import tibble
-
-rm(list = ls())
-
 
 index <- new.env(parent = emptyenv())
 
-#' Indicating death year
+#' subsetting to only include IDs with three digits
 #'
-#' Assigning a boolean variable to rulers who were either murdered or assinated
-#'
-#' @return
-#' @export
-#'
-#' @examples
-indicate_deathyear <-
+#' @name create_base_frame
+create_base_frame <-
   function() {
-
     df <- ocrProject::create_final_sheet()
 
     df <-
@@ -34,23 +19,6 @@ indicate_deathyear <-
     df[stringr::str_which(df$Ruler, "†"), "Death"] <- 1
 
     df[stringr::str_which(df$Ruler, "‡"), "Murdered"] <- 1
-
-    return(df)
-  }
-
-
-
-#' subsetting to only include IDs with three digits
-#'
-#' @return
-#' @export
-#'
-#' @examples
-create_subset_df <-
-  function() {
-
-    df <-
-      indicate_deathyear()
 
     # subset of dataframe of IDs with three digits (ruler)
 
@@ -73,21 +41,22 @@ create_subset_df <-
   }
 
 
-
 #' Calculating the death year
 #'
-#' @return
-#' @export
+#' @name calculate_death_year
 #'
-#' @examples
-create_base_frame <-
+#' @usage calculate_death_year()
+#'
+#' @export
+calculate_death_year <-
   function() {
     df_sub <-
-      create_subset_df()
+      create_base_frame()
 
-    # regular expression to test for the existence of at least a three or four digit
-    # number surrounded by opening and closing brackets. The first expression specifies cases
-    # in which the cross appeared before the year and the second expression after the year.
+    # regular expression to test for the existence of at least a
+    # three or four digit number surrounded by opening and closing brackets.
+    # The first expression specifies cases in which the cross appeared before
+    # the year and the second expression after the year.
 
     cross_before <-
       "(\\([^\\(\\)]*[†‡][^†‡\\(\\)]*\\d{3,4}[^\\)\\(]*\\))"
@@ -95,27 +64,32 @@ create_base_frame <-
     cross_after <-
       "(\\([^\\(\\)]*\\d{3,4}[^†‡\\(\\)]*[†‡][^\\)\\(]*\\))"
 
-    # substep makes it possible to make sure that all relevant cases containing a cross
-    # where detected
+    # substep makes it possible to make sure that all relevant
+    # cases containing a cross were detected
 
     df_sub$cross <-
       df_sub$Ruler %>%
-      stringi::stri_extract_first_regex(paste(cross_before, cross_after, sep = "|"))
+      stringi::stri_extract_first_regex(
+        paste(cross_before, cross_after, sep = "|")
+      )
+
+    df_double <-
+      df_sub %>%
+      dplyr::slice(which(!is.na(df_sub$cross)))
 
 
-
-    df_double <- df_sub %>% dplyr::slice(which(!is.na(df_sub$cross)))
-
-
-    # The month march, which written in Truhart style using roman numerals as III, was often recognized as 111.
+    # The month march, which written in Truhart style using roman
+    # numerals as III, was often recognized as 111.
 
     df_double$cross <-
       df_double$cross %>%
       stringr::str_replace("([0-9])\\.(111)\\.([0-9])", "\\1\\.III\\.\\3")
 
 
-    # Splitting the variable deathyear by single and double cross. If a time period was given, meaning if Truhart specified
-    # a birthyear and a deathyer then those are usually seperated by a cross. If the left side of the string contains no
+    # Splitting the variable deathyear by single and double cross.
+    # If a time period was given, meaning if Truhart specified
+    # a birthyear and a deathyer then those are usually seperated by a cross.
+    # If the left side of the string contains no
     # year then only the deathyear was given.
 
     df_split <-
@@ -126,8 +100,12 @@ create_base_frame <-
         n = 2, # more than 2 splits should not occur
         tokens_only = TRUE
       ) %>%
+      setNames(c("V1", "V2")) %>%
       tibble::as_tibble() %>%
-      dplyr::select(Birthyear = V1, Deathyear = V2)
+      dplyr::select(
+        Birthyear = V1,
+        Deathyear = V2
+      )
 
     # TODO Currently the functions do not account for for estimates of the form:
     # (1780/ or 1810). This should be fixed in the future.
@@ -183,41 +161,3 @@ create_base_frame <-
 
     return(df_final)
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

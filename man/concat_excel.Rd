@@ -7,7 +7,7 @@
 concat_excel(desc_path, desc_continent, desc_startpage, desc_endpage)
 }
 \arguments{
-\item{desc_path}{The list pointing to the path of the excel files that are to be merged}
+\item{desc_path}{The list pointing to the path of the excel files}
 
 \item{desc_continent}{The continent of the excel file}
 
