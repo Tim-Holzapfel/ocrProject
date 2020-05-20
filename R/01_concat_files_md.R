@@ -178,142 +178,142 @@ index <- new.env(parent = emptyenv())
 #'
 #' @name create_header
 create_header <- function() {
-    sheet <- create_sheet()
+  sheet <- create_sheet()
 
-    header <- sheet %>%
-      tidyr::unite("Ruler_ref",
-        c("Ruler", "References"),
-        na.rm = T,
-        remove = F,
-        sep = " "
-      )
-
-    # By construction "unite" removes the word or placeholder NA and leaves
-    # the entry empty. This can lead to problems,
-    # therefore blank cells are replaced with NA.
-
-    header[which(header$Ruler_ref == ""), "Ruler_ref"] <- NA
-
-    index_header <- header %>%
-      with(
-        which(
-          (!is.na(ID) & is.na(Period) & is.na(Ruler_ref)) |
-            (is.na(ID) & is.na(Period) & !is.na(Ruler_ref))
-        )
-      )
-
-    header <- header %>%
-      dplyr::slice(index_header) %>%
-      dplyr::select(
-        Region = ID, Country = Ruler_ref, N,
-        Excel_path, Continent, Startpage, Endpage
-      )
-
-
-    header %<>% dplyr::filter(
-      (stringi::stri_detect_regex(Country, "[A-z ]+[0-9]+$") |
-        stringi::stri_detect_regex(Region, "^[0-9]+[A-z ]+"))
+  header <- sheet %>%
+    tidyr::unite("Ruler_ref",
+      c("Ruler", "References"),
+      na.rm = T,
+      remove = F,
+      sep = " "
     )
 
-    # Header on the left side: Number is explicitly extracted from the
-    # right to prevent missmatches
+  # By construction "unite" removes the word or placeholder NA and leaves
+  # the entry empty. This can lead to problems,
+  # therefore blank cells are replaced with NA.
 
-    header$header_right <-
-      stringi::stri_extract_last(header$Country, regex = c("[0-9]+"))
+  header[which(header$Ruler_ref == ""), "Ruler_ref"] <- NA
 
-    # Header on the right side: Number is explicitly extracted from the
-    # left to prevent missmatches
-
-    header$header_left <-
-      stringi::stri_extract_first(header$Region, regex = c("[0-9]+"))
-
-    header <-
-      tidyr::unite(
-        header,
-        "Page",
-        c("header_right", "header_left"),
-        na.rm = TRUE,
-        remove = TRUE
+  index_header <- header %>%
+    with(
+      which(
+        (!is.na(ID) & is.na(Period) & is.na(Ruler_ref)) |
+          (is.na(ID) & is.na(Period) & !is.na(Ruler_ref))
       )
+    )
 
-    # Page should only be formatted to integer after the left and right
-    # header have been united
-
-    header$Page %<>% as.integer()
-
-    # Test to check that the page header is valid
-    page_header_test <-
-      (header$Page >= header$Startpage) & (header$Page <= header$Endpage)
-
-    print(assertthat::validate_that(all(page_header_test),
-      msg = "Warning: Not all of the header pages are in their right place!"
-    ))
-
-    wrong_page_index <-
-      which(!page_header_test)
-
-    # Wrong pages
-
-    wrong_header <-
-      header[wrong_page_index, ]
+  header <- header %>%
+    dplyr::slice(index_header) %>%
+    dplyr::select(
+      Region = ID, Country = Ruler_ref, N,
+      Excel_path, Continent, Startpage, Endpage
+    )
 
 
-    usethis::use_data(wrong_header, overwrite = TRUE)
+  header %<>% dplyr::filter(
+    (stringi::stri_detect_regex(Country, "[A-z ]+[0-9]+$") |
+      stringi::stri_detect_regex(Region, "^[0-9]+[A-z ]+"))
+  )
 
-    # The entries with the wrong page header are dropped
-    # and need to be corrected
+  # Header on the left side: Number is explicitly extracted from the
+  # right to prevent missmatches
 
-    header <-
-      header[-wrong_page_index, ]
+  header$header_right <-
+    stringi::stri_extract_last(header$Country, regex = c("[0-9]+"))
 
-    # Test to check that there are no missing page headers.
-    # To check the page increments, the pages need to be in the right order
+  # Header on the right side: Number is explicitly extracted from the
+  # left to prevent missmatches
 
-    header <-
-      header[order(
-        header$Continent,
-        header$Startpage,
-        header$Endpage,
-        header$Page,
-        decreasing = FALSE
-      ), ]
+  header$header_left <-
+    stringi::stri_extract_first(header$Region, regex = c("[0-9]+"))
 
-    # Generating "page increment", difference of the page number
-    # between one page and the next. Should be 1 unless adjacent
-    # pages are missing.
+  header <-
+    tidyr::unite(
+      header,
+      "Page",
+      c("header_right", "header_left"),
+      na.rm = TRUE,
+      remove = TRUE
+    )
 
-    header$increment <- header$Page - dplyr::lag(header$Page)
+  # Page should only be formatted to integer after the left and right
+  # header have been united
 
-    header$increment[1] <- 1
+  header$Page %<>% as.integer()
 
-    # Entries from different continents are usually from different books,
-    # these entries need therefore to be excluded
+  # Test to check that the page header is valid
+  page_header_test <-
+    (header$Page >= header$Startpage) & (header$Page <= header$Endpage)
 
-    header$increment[which(!(header$Continent ==
-                               dplyr::lag(header$Continent)))] <- 1
+  print(assertthat::validate_that(all(page_header_test),
+    msg = "Warning: Not all of the header pages are in their right place!"
+  ))
+
+  wrong_page_index <-
+    which(!page_header_test)
+
+  # Wrong pages
+
+  wrong_header <-
+    header[wrong_page_index, ]
 
 
-    pages_missing <-
-      header[which(header$increment != 1), ]
+  usethis::use_data(wrong_header, overwrite = TRUE)
+
+  # The entries with the wrong page header are dropped
+  # and need to be corrected
+
+  header <-
+    header[-wrong_page_index, ]
+
+  # Test to check that there are no missing page headers.
+  # To check the page increments, the pages need to be in the right order
+
+  header <-
+    header[order(
+      header$Continent,
+      header$Startpage,
+      header$Endpage,
+      header$Page,
+      decreasing = FALSE
+    ), ]
+
+  # Generating "page increment", difference of the page number
+  # between one page and the next. Should be 1 unless adjacent
+  # pages are missing.
+
+  header$increment <- header$Page - dplyr::lag(header$Page)
+
+  header$increment[1] <- 1
+
+  # Entries from different continents are usually from different books,
+  # these entries need therefore to be excluded
+
+  header$increment[which(!(header$Continent ==
+    dplyr::lag(header$Continent)))] <- 1
 
 
-    usethis::use_data(pages_missing, overwrite = TRUE)
+  pages_missing <-
+    header[which(header$increment != 1), ]
 
 
-    # Once the number has been extracted from the left and right header
-    # it can or should be removed
+  usethis::use_data(pages_missing, overwrite = TRUE)
 
-    header$Region <-
-      stringr::str_remove(header$Region, "[0-9]+") %>% trimws()
 
-    header$Country <-
-      stringr::str_remove(header$Country, "[0-9]+") %>% trimws()
+  # Once the number has been extracted from the left and right header
+  # it can or should be removed
 
-    index$header <-
-      header[["N"]]
+  header$Region <-
+    stringr::str_remove(header$Region, "[0-9]+") %>% trimws()
 
-    return(header)
-  }
+  header$Country <-
+    stringr::str_remove(header$Country, "[0-9]+") %>% trimws()
+
+  index$header <-
+    header[["N"]]
+
+  return(header)
+}
 
 
 #' Creates the final data frame
@@ -327,104 +327,104 @@ create_header <- function() {
 #' @export
 #'
 create_final_sheet <- function() {
-    header <-
-      create_header()
+  header <-
+    create_header()
 
-    sheet <-
-      create_sheet()
+  sheet <-
+    create_sheet()
 
-    # TODO the function "create_header" is called twice,
-    # not the most efficient way. Maybe should change it
+  # TODO the function "create_header" is called twice,
+  # not the most efficient way. Maybe should change it
 
-    sheet_final <-
-      dplyr::left_join(
-        sheet,
-        header[, c("Region", "Country", "N", "Page"), by = "N"])
+  sheet_final <-
+    dplyr::left_join(
+      sheet,
+      header[, c("Region", "Country", "N", "Page"), by = "N"]
+    )
 
-    sheet_final$Page <-
-      zoo::na.locf(sheet_final$Page, na.rm = FALSE)
+  sheet_final$Page <-
+    zoo::na.locf(sheet_final$Page, na.rm = FALSE)
 
-    sheet_final$Page <-
-      sheet_final$Page %>%
-      as.integer()
+  sheet_final$Page <-
+    sheet_final$Page %>%
+    as.integer()
 
-    sheet_final$Startpage <-
-      sheet_final$Startpage %>%
-      as.integer()
+  sheet_final$Startpage <-
+    sheet_final$Startpage %>%
+    as.integer()
 
-    sheet_final$Endpage <-
-      sheet_final$Endpage %>%
-      as.integer()
+  sheet_final$Endpage <-
+    sheet_final$Endpage %>%
+    as.integer()
 
 
-    # Write test to make sure all of the variables have the right data type
+  # Write test to make sure all of the variables have the right data type
 
-    # type <-
-    #   apply(sheet_final, 2, typeof)
+  # type <-
+  #   apply(sheet_final, 2, typeof)
 
-    # First we apply the classical "last observation forward"
-    # in classical, cascading form
+  # First we apply the classical "last observation forward"
+  # in classical, cascading form
 
-    sheet_final$Region <-
-      zoo::na.locf(sheet_final$Region, na.rm = FALSE)
+  sheet_final$Region <-
+    zoo::na.locf(sheet_final$Region, na.rm = FALSE)
 
-    sheet_final$Country <-
-      zoo::na.locf(sheet_final$Country, na.rm = FALSE)
+  sheet_final$Country <-
+    zoo::na.locf(sheet_final$Country, na.rm = FALSE)
 
-    # Depending on the current situation, either Region or Country will
-    # have started with missing entries which means that the first rows of
-    # either Region or Country will still contain missing values.
-    # For this reason, the same operation as before is applied but this
-    # time backwards, so the last non-missing observation is carried backward
-    # rather than forward
+  # Depending on the current situation, either Region or Country will
+  # have started with missing entries which means that the first rows of
+  # either Region or Country will still contain missing values.
+  # For this reason, the same operation as before is applied but this
+  # time backwards, so the last non-missing observation is carried backward
+  # rather than forward
 
-    sheet_final$Region <-
-      zoo::na.locf(sheet_final$Region, na.rm = FALSE, fromLast = TRUE)
+  sheet_final$Region <-
+    zoo::na.locf(sheet_final$Region, na.rm = FALSE, fromLast = TRUE)
 
-    sheet_final$Country <-
-      zoo::na.locf(sheet_final$Country, na.rm = FALSE, fromLast = TRUE)
+  sheet_final$Country <-
+    zoo::na.locf(sheet_final$Country, na.rm = FALSE, fromLast = TRUE)
 
-    # The variables ID and especially Ruler usually do not only contain
-    # leading and trailing white spaces but sometimes also multiple white
-    # spaces between the indiviual words. str_squish helps replacing
-    # them by a single white space
+  # The variables ID and especially Ruler usually do not only contain
+  # leading and trailing white spaces but sometimes also multiple white
+  # spaces between the indiviual words. str_squish helps replacing
+  # them by a single white space
 
-    sheet_final$Period <-
-      stringr::str_squish(sheet_final$Period)
+  sheet_final$Period <-
+    stringr::str_squish(sheet_final$Period)
 
-    sheet_final$Ruler <-
-      stringr::str_squish(sheet_final$Ruler)
+  sheet_final$Ruler <-
+    stringr::str_squish(sheet_final$Ruler)
 
-    # Dropping the rows that used to contain the headers since the
-    # content of the headers has been assigned to
+  # Dropping the rows that used to contain the headers since the
+  # content of the headers has been assigned to
 
-    sheet_final <-
-      sheet_final[-index$header, ]
+  sheet_final <-
+    sheet_final[-index$header, ]
 
-    # Very important step to assure that all the pages are in
-    # their right order (they usualyl are not)
+  # Very important step to assure that all the pages are in
+  # their right order (they usualyl are not)
 
-    sheet_final <-
-      sheet_final[order(
-        sheet_final$Continent,
-        sheet_final$Page,
-        decreasing = FALSE), ]
+  sheet_final <-
+    sheet_final[order(
+      sheet_final$Continent,
+      sheet_final$Page,
+      decreasing = FALSE
+    ), ]
 
-    # ABBYY 15 usually inserts a white space between page breaks.
-    # These empty rows should be dropped
+  # ABBYY 15 usually inserts a white space between page breaks.
+  # These empty rows should be dropped
 
-    index_empty <-
-      which(is.na(sheet_final$ID) &
-              is.na(sheet_final$Period) &
-              is.na(sheet_final$Ruler))
+  index_empty <-
+    which(is.na(sheet_final$ID) &
+      is.na(sheet_final$Period) &
+      is.na(sheet_final$Ruler))
 
-    # N is not correct anymore since the rows have been shifted and dropped
+  # N is not correct anymore since the rows have been shifted and dropped
 
-    sheet_final <-
-      sheet_final[-index_empty, ] %>%
-      dplyr::select(-c("N"))
+  sheet_final <-
+    sheet_final[-index_empty, ] %>%
+    dplyr::select(-c("N"))
 
-    return(sheet_final)
-
-  }
-
+  return(sheet_final)
+}

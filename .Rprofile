@@ -6,7 +6,6 @@ tryCatch(startup::startup(), error = function(ex) message(".Rprofile error: ", c
 }
 
 if (interactive()) {
-
   suppressMessages(require(devtools))
 
   suppressMessages(require(usethis))
@@ -31,11 +30,15 @@ if (interactive()) {
 
   suppressMessages(use_package("usethis"))
 
+  suppressMessages(use_lifecycle())
+
+  suppressMessages(use_lifecycle_badge("stable"))
+
 }
 
 options(
   usethis.full_name = "Tim Holzapfel",
-  usethis.protocol  = "ssh",
+  usethis.protocol = "ssh",
   usethis.description = list(
     `Authors@R` = 'person(
       "Tim", "Holzapfel",
@@ -47,14 +50,3 @@ options(
     Language = "en"
   )
 )
-
-
-
-
-
-
-
-
-
-
-
