@@ -27,3 +27,5 @@ RoxygenNote: 7.1.0
 Suggests: 
     spelling
 RdMacros: lifecycle
+URL: https://github.com/Tim-Lukas-H/ocrProject
+BugReports: https://github.com/Tim-Lukas-H/ocrProject/issues
