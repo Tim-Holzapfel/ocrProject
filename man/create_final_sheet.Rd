@@ -5,9 +5,7 @@
 \title{Creates the final data frame}
 \usage{
 create_final_sheet()
-
-\lifecycle{stable}
 }
 \description{
-Creates the final data frame
+\lifecycle{stable}
 }

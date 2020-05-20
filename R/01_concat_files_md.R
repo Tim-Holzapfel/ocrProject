@@ -322,11 +322,11 @@ create_header <- function() {
 #'
 #' @usage create_final_sheet()
 #'
-#' \lifecycle{stable}
-#'
 #' @export
 #'
 create_final_sheet <- function() {
+
+
   header <-
     create_header()
 

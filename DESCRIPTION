@@ -18,14 +18,16 @@ Imports:
     purrr,
     zoo,
     usethis,
-    lifecycle
+    lifecycle,
+    magrittr
 Encoding: UTF-8
-Language: en
+Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
 Suggests: 
-    spelling
+    spelling,
+    testthat
 RdMacros: lifecycle
 URL: https://github.com/Tim-Lukas-H/ocrProject
 BugReports: https://github.com/Tim-Lukas-H/ocrProject/issues

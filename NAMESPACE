@@ -2,3 +2,4 @@
 
 export(calculate_death_year)
 export(create_final_sheet)
+importFrom(magrittr,"%>%")
