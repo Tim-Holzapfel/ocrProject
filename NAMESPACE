@@ -2,4 +2,6 @@
 
 export(calculate_death_year)
 export(create_final_sheet)
+importFrom(lifecycle,deprecate_soft)
 importFrom(magrittr,"%>%")
+importFrom(stats,setNames)

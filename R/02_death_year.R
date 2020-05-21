@@ -47,6 +47,8 @@ create_base_frame <-
 #'
 #' @usage calculate_death_year()
 #'
+#' @importFrom stats setNames
+#'
 #' @export
 calculate_death_year <-
   function() {

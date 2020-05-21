@@ -8,26 +8,25 @@ Authors@R:
            email = "timholzapfel@outlook.com",
            comment = c(ORCID = "0000-0002-2019-520X"))
 Description: What the package does (one paragraph).
-License: CC BY-NC-ND 4.0
-Imports: 
-    tidyr,
-    readxl,
-    stringr,
-    stringi,
-    dplyr,
-    purrr,
-    zoo,
-    usethis,
-    lifecycle,
-    magrittr
+License: CC BY-NC-ND 4.0 + file LICENSE
 Encoding: UTF-8
 Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
-Suggests: 
-    spelling,
-    testthat
+Imports: 
+    readxl,
+    stringr,
+    stringi,
+    dplyr,
+    tidyr,
+    purrr,
+    zoo,
+    usethis,
+    lifecycle,
+    magrittr
 RdMacros: lifecycle
 URL: https://github.com/Tim-Lukas-H/ocrProject
 BugReports: https://github.com/Tim-Lukas-H/ocrProject/issues
+Suggests: 
+    testthat

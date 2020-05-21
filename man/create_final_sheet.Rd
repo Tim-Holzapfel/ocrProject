@@ -7,5 +7,5 @@
 create_final_sheet()
 }
 \description{
-\lifecycle{stable}
+Creates the final data frame
 }
