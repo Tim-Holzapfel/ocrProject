@@ -5,7 +5,10 @@
 
 <!-- badges: start -->
 
-![Lifecycle: stable](man/figures/lifecycle-stable.svg)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![R build
+status](https://github.com/Tim-Lukas-H/ocrProject/workflows/R-CMD-check/badge.svg)](https://github.com/Tim-Lukas-H/ocrProject/actions)
 <!-- badges: end -->
 
 The goal of ocrProject is to …

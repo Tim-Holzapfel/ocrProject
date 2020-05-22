@@ -22,7 +22,7 @@ Imports:
     tidyr,
     purrr,
     zoo,
-    usethis,
+    tibble,
     lifecycle,
     magrittr
 RdMacros: lifecycle

@@ -5,6 +5,8 @@
 #' @usage excel_count(x)
 #'
 #' @param x An input
+#'
+#' @noRd
 excel_count <-
   function(x) {
     suppressMessages(dim(
@@ -24,6 +26,8 @@ excel_count <-
 #' @name desc_file
 #'
 #' @usage desc_file()
+#'
+#' @noRd
 desc_file <-
   function() {
 
@@ -96,6 +100,8 @@ desc_file <-
 #' @param desc_continent The continent of the excel file
 #' @param desc_startpage The startpage of the excel file
 #' @param desc_endpage The endpage of th excel file
+#'
+#' @noRd
 concat_excel <-
   function(desc_path, desc_continent, desc_startpage, desc_endpage) {
 
@@ -146,6 +152,8 @@ concat_excel <-
 #' @name create_sheet
 #'
 #' @usage create_sheet()
+#'
+#' @noRd
 create_sheet <-
   function() {
     file_desc <- desc_file()
@@ -177,6 +185,8 @@ index <- new.env(parent = emptyenv())
 #' creating the header for the files
 #'
 #' @name create_header
+#'
+#' @noRd
 create_header <- function() {
   sheet <- create_sheet()
 
@@ -245,9 +255,10 @@ create_header <- function() {
   page_header_test <-
     (header$Page >= header$Startpage) & (header$Page <= header$Endpage)
 
-  print(assertthat::validate_that(all(page_header_test),
-    msg = "Warning: Not all of the header pages are in their right place!"
-  ))
+  # TODO move the test "assertthat" to the test files folder
+  # print(assertthat::validate_that(all(page_header_test),
+  #   msg = "Warning: Not all of the header pages are in their right place!"
+  # ))
 
   wrong_page_index <-
     which(!page_header_test)
@@ -316,6 +327,8 @@ create_header <- function() {
 }
 
 
+#' \lifecycle{stable}
+#'
 #' Creates the final data frame
 #'
 #' @name create_final_sheet

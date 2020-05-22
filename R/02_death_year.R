@@ -4,6 +4,8 @@ index <- new.env(parent = emptyenv())
 #' subsetting to only include IDs with three digits
 #'
 #' @name create_base_frame
+#'
+#' @noRd
 create_base_frame <-
   function() {
     df <- ocrProject::create_final_sheet()
@@ -20,7 +22,7 @@ create_base_frame <-
 
     df[stringr::str_which(df$Ruler, "‡"), "Murdered"] <- 1
 
-    # subset of dataframe of IDs with three digits (ruler)
+    # subset of data frame of IDs with three digits (ruler)
 
     index <-
       stringr::str_which(df$ID, "^[0-9][0-9][0-9]$")
@@ -41,6 +43,8 @@ create_base_frame <-
   }
 
 
+#' \lifecycle{stable}
+#'
 #' Calculating the death year
 #'
 #' @name calculate_death_year
@@ -90,9 +94,9 @@ calculate_death_year <-
 
     # Splitting the variable deathyear by single and double cross.
     # If a time period was given, meaning if Truhart specified
-    # a birthyear and a deathyer then those are usually seperated by a cross.
+    # a birth year and a death year then those are usually separated by a cross.
     # If the left side of the string contains no
-    # year then only the deathyear was given.
+    # year then only the death year was given.
 
     df_split <-
       df_double$cross %>%

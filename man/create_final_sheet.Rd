@@ -2,7 +2,7 @@
 % Please edit documentation in R/01_concat_files_md.R
 \name{create_final_sheet}
 \alias{create_final_sheet}
-\title{Creates the final data frame}
+\title{\lifecycle{stable}}
 \usage{
 create_final_sheet()
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/02_death_year.R
 \name{calculate_death_year}
 \alias{calculate_death_year}
-\title{Calculating the death year}
+\title{\lifecycle{stable}}
 \usage{
 calculate_death_year()
 }
