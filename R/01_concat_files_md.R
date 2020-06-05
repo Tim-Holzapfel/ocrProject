@@ -20,7 +20,6 @@ excel_count <-
     )[1])
   }
 
-
 #' This filee provides an overview of the individual excel files
 #'
 #' @name desc_file
@@ -338,8 +337,6 @@ create_header <- function() {
 #' @export
 #'
 create_final_sheet <- function() {
-
-
   header <-
     create_header()
 
@@ -441,15 +438,3 @@ create_final_sheet <- function() {
 
   return(sheet_final)
 }
-
-
-
-
-
-
-
-
-
-
-
-

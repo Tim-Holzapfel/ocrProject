@@ -14,19 +14,18 @@ Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
-Imports: 
-    readxl,
-    stringr,
-    stringi,
-    dplyr,
-    tidyr,
-    purrr,
-    zoo,
-    tibble,
-    lifecycle,
-    magrittr
 RdMacros: lifecycle
 URL: https://github.com/Tim-Lukas-H/ocrProject
 BugReports: https://github.com/Tim-Lukas-H/ocrProject/issues
-Suggests: 
-    testthat
+Imports: 
+    dplyr,
+    purrr,
+    readxl,
+    stringi,
+    stringr,
+    tibble,
+    tidyr,
+    usethis,
+    zoo,
+    ocrProject,
+    haven

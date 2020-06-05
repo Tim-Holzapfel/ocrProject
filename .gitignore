@@ -2,5 +2,8 @@
 README.Rmd
 .Rprofile
 old_code
-zwischenablage
+zwischenablage/
 docs
+.renvignore
+.dta
+.Renviron
