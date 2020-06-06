@@ -17,15 +17,15 @@ RoxygenNote: 7.1.0
 RdMacros: lifecycle
 URL: https://github.com/Tim-Lukas-H/ocrProject
 BugReports: https://github.com/Tim-Lukas-H/ocrProject/issues
+Depends: 
+    R (>= 4.0.0)
 Imports: 
+    cellranger,
     dplyr,
     purrr,
     readxl,
     stringi,
-    stringr,
     tibble,
     tidyr,
-    usethis,
-    zoo,
-    ocrProject,
-    haven
+    magrittr,
+    lifecycle
