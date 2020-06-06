@@ -10,3 +10,4 @@
 ^pkgdown$
 ^zwischenablage$
 ^old_code$
+^\.renvignore$

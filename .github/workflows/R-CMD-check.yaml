@@ -1,24 +1,23 @@
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+    paths:
+      - README.Rmd
 
-name: R-CMD-check
+name: Render README
 
 jobs:
-  R-CMD-check:
+  render:
+    name: Render README
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: r-lib/actions/setup-r@master
-      - name: Install dependencies
+      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-pandoc@v1
+      - name: Install rmarkdown
+        run: Rscript -e 'install.packages("rmarkdown")'
+      - name: Render README
+        run: Rscript -e 'rmarkdown::render("README.Rmd")'
+      - name: Commit results
         run: |
-          install.packages(c("remotes", "rcmdcheck"))
-          remotes::install_deps(dependencies = TRUE)
-        shell: Rscript {0}
-      - name: Check
-        run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
-        shell: Rscript {0}
+          git commit README.md -m 'Re-build README.Rmd' || echo "No changes to commit"
+          git push origin || echo "No changes to commit"
