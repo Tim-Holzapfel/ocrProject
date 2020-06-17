@@ -27,6 +27,6 @@ Imports:
     stringr,
     tibble,
     tidyr,
-    usethis,
+    zoo,
     magrittr,
     lifecycle
