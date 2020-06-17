@@ -10,10 +10,10 @@ create_base_frame <-
       finalize_sheet() %>%
       dplyr::mutate(
         Death = dplyr::if_else(
-          stringr::str_detect(Ruler, "†"), 1, 0, missing = 0
+          stringr::str_detect(Ruler, "\U2020"), 1, 0, missing = 0
         ),
         Murdered = dplyr::if_else(
-          stringr::str_detect(Ruler, "‡"), 1, 0, missing = 0
+          stringr::str_detect(Ruler, "\U2021"), 1, 0, missing = 0
         )
       )
 
@@ -34,8 +34,6 @@ create_base_frame <-
     return(df_sub)
   }
 
-
-
 #' @title Death year
 #'
 #' @description Generating the death year
@@ -54,10 +52,10 @@ calculate_death_year <-
     # the year and the second expression after the year.
 
     cross_before <-
-      "(\\([^\\(\\)]*[†‡][^†‡\\(\\)]*\\d{3,4}[^\\)\\(]*\\))"
+      "(\\([^\\(\\)]*[\U2020\U2021][^\U2020\U2021\\(\\)]*\\d{3,4}[^\\)\\(]*\\))"
 
     cross_after <-
-      "(\\([^\\(\\)]*\\d{3,4}[^†‡\\(\\)]*[†‡][^\\)\\(]*\\))"
+      "(\\([^\\(\\)]*\\d{3,4}[^\U2020\U2021\\(\\)]*[\U2020\U2021][^\\)\\(]*\\))"
 
     cross_both <- paste(cross_before, cross_after, sep = "|")
 
@@ -89,7 +87,7 @@ calculate_death_year <-
     df_split <-
       stringr::str_split(
         string = df_double$cross,
-        pattern = "(†)|(‡)",
+        pattern = "(\U2020)|(\U2021)",
         simplify = TRUE,
         n = 2
       ) %>%
@@ -156,6 +154,6 @@ calculate_death_year <-
 
 
 
-
+#use_git_remote(name = "origin", "https://github.com/Tim-Lukas-H/ocrProject.git", overwrite = TRUE)
 
 

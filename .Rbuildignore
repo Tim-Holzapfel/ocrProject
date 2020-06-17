@@ -11,3 +11,4 @@
 ^zwischenablage$
 ^old_code$
 ^\.renvignore$
+^Makefile$
