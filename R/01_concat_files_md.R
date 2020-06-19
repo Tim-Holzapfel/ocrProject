@@ -43,6 +43,8 @@ gen_overview <- function(path_input = "D:/km/Truhart") {
 }
 
 
+
+
 #' @title Concatenating Excel-files
 #'
 #' @description This function concatenates the individual Excel-files to one
@@ -206,7 +208,8 @@ finalize_sheet <- function() {
       Region = zoo::na.locf(Region, na.rm = FALSE),
       Country = zoo::na.locf(Country, na.rm = FALSE),
       Country = zoo::na.locf(Country, na.rm = FALSE, fromLast = TRUE),
-      Page = zoo::na.locf(Page, na.rm = FALSE)
+      Page = zoo::na.locf(Page, na.rm = FALSE),
+      Ruler = stringr::str_squish(Ruler) # Removes repeated white spaces
     ) %>%
     dplyr::arrange(Continent, Page, Excel_Row)
 

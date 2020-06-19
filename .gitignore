@@ -7,3 +7,4 @@ docs
 .renvignore
 .Renviron
 .dta
+data/stata/
