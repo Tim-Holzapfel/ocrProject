@@ -13,3 +13,6 @@
 ^\.renvignore$
 ^Makefile$
 ^data\stata\$
+^R/03_allocating_territories$
+^R/03_allocating_territories\.R$
+^codemeta\.json$

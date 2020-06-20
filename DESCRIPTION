@@ -21,14 +21,15 @@ Depends:
     R (>= 4.0.0)
 Imports: 
     dplyr,
+    magrittr,
     purrr,
     readxl,
     stringi,
     stringr,
     tibble,
     tidyr,
+    usethis,
     zoo,
     haven,
     Hmisc,
-    magrittr,
     lifecycle

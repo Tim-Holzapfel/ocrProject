@@ -9,8 +9,6 @@
 #' @import dplyr
 #'
 export_df_final <- function() {
-
-
   df_final <- calculate_death_year() %>%
     select(-c("Page", "Startpage", "Endpage", "Excel_sheet", "Excel_Row", "N"))
 
@@ -35,17 +33,13 @@ export_df_final <- function() {
   Hmisc::label(df_final$Period) <- "Period in which the Ruler reigned"
 
 
-  haven::write_dta(df_final, path = "data/stata/Truhart_data.dta")
+  haven::write_dta(df_final, path = "inst/extdata/Truhart_data.dta")
 
   df_final_svenja <- df_final
 
   df_final_svenja$Ruler <- stringr::str_sub(df_final_svenja$Ruler, 1, 190)
 
   haven::write_dta(df_final_svenja,
-                   path = "data/stata/Truhart_data_svenja.dta", version = 12)
-
+    path = "inst/extdata/Truhart_data_svenja.dta", version = 12
+  )
 }
-
-
-
-
