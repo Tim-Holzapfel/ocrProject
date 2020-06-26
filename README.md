@@ -9,12 +9,12 @@
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![R build
 status](https://github.com/Tim-Lukas-H/ocrProject/workflows/R-CMD-check/badge.svg)](https://github.com/Tim-Lukas-H/ocrProject/actions)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2020--06--21-yellowgreen.svg)](/commits/master)
-[![](https://img.shields.io/badge/code%20size-6815.267KB-brightgreen)](https://github.com/Tim-Lukas-H/ocrProject)
-[![](https://img.shields.io/badge/devel%20version-0.0.0.9000-blue)](https://github.com/Tim-Lukas-H/ocrProject)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2020--06--26-yellowgreen.svg)](/commits/master)
+[![](https://img.shields.io/badge/version-0.0.0.9000-blue)](https://github.com/Tim-Lukas-H/ocrProject)
 <!-- badges: end -->
 
-The goal of ocrProject is to …
+The goal of ocrProject is to create workable datasets from the
+individual Truhart scans.
 
 ## Installation
 
@@ -34,7 +34,7 @@ library(ocrProject)
 ## basic example code
 ```
 
-<img src="man/figures/by-nc-nd-eu.svg" alt="CC License" style="display:block;margin-left:auto;margin-right:auto;width:15%;">
+<!-- <img src="man/figures/by-nc-nd-eu.svg" alt="CC License" style="display:block;margin-left:auto;margin-right:auto;width:15%;"> -->
 
 <!-- <div style="text-align:center;"> -->
 

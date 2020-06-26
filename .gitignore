@@ -1,10 +1,54 @@
-.Rproj.user
-README.Rmd
-.Rprofile
-old_code
+$ cat .gitignore
+*.Rproj.user
+*.Rmd
+
 zwischenablage/
-docs
-.renvignore
+
+
+# Stata Data
+*.dta
+
+# R Profile
+*.Rprofile
+
+# R Buildignore
+*.Rbuildignore
+
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+
+# User-specific files
+.Ruserdata
+
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rproj.user/
+
+# knitr and R markdown default cache directories
+*_cache/
+/cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
 .Renviron
-.dta
-data/stata/
+
+# pkgdown site
+docs/
+
+# User Files
+.Rproj.user
