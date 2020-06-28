@@ -101,7 +101,6 @@ gen_header <- function(dev_mode = FALSE) {
     header_final <-
       header_final %>%
       dplyr::select(region, country, N, page)
-
   }
 
   # The variables region and country are assigned to the rulers in a "cascading"
@@ -124,8 +123,17 @@ gen_header <- function(dev_mode = FALSE) {
       pdf_page = page - startpage + 1
     ) %>%
     dplyr::slice(-header_index) %>% # Remove rows containing the header
-    dplyr::arrange(continent, page, excel_row) # Very important!
+    dplyr::arrange(continent, startpage, page) # Very important!
+
+  # The last part, the sorting is very important because the page order is not
+  # always correct inside the excel files, meaning that even though the correct
+  # order of course would be first page 12 and then page 13 in the excel file
+  # the order would be page 13 and then page 12. So the first sorting key should
+  # be the continent because the page ranges inside the continents are always
+  # unique. Then one should sort for the start page of the excel file and then
+  # one should sort for the page (meaning in this case the page of the excel
+  # file that was taken from the header). This last sorting part controls for
+  # the cases when students changed the original page order.
 
   return(merge_data_with_header)
-
 }

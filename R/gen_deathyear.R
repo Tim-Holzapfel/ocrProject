@@ -137,5 +137,4 @@ gen_deathyear <- function() {
     df_final %>%
     dplyr::select(birthyear_l, birthyear_u, deathyear_l, deathyear_u, N) %>%
     dplyr::full_join(df, ., by = "N")
-
 }

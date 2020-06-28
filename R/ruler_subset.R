@@ -23,5 +23,4 @@ ruler_subset <- function(data) {
     tidyr::drop_na(ruler)
 
   return(data_subset)
-
 }

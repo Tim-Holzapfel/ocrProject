@@ -1,0 +1,11 @@
+^data-raw$
+^zwischenablage$
+^test_environment$
+[.]Rmd$
+[.]user$
+[.]Rproj$
+[.]git$
+[.]github$
+^.*\.Rproj$
+^\.Rproj\.user$
+[.]dta$

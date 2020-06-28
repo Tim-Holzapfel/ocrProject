@@ -1,89 +1,3 @@
-
-
-admin_environ <- new.env(parent = emptyenv())
-
-#' Unique Index range
-#'
-#' @description Function to determine and return the unique index level of
-#'   all administrative ares
-#'
-gen_unique_index_range <- function() {
-  for (j in 1:5) {
-
-    # For level 5, level 4 and level 3
-
-    if (j %in% c(3, 4, 5)) {
-
-      # Call gen_level_admin_id function and assign the dataset returned by that
-      # function to the variable "level".
-
-      level <- do.call(paste("gen_level", j, "_admin_id", sep = ""), list())
-
-
-      # Find overlapping IDs and
-
-      i <- 1
-      repeat {
-        index <-
-          which(
-            (level$id_start >= dplyr::lag(level$id_start)) &
-              (level$id_end <= dplyr::lag(level$id_end)) &
-              (level$id_group == dplyr::lag(level$id_group))
-          )
-
-        # Stop iteration if there are no overlapping values left
-
-        if (rlang::is_empty(index)) break
-
-        # Binding the subset of the data to the environment with the name
-        # "admin_environ"
-
-        admin_environ[[paste0("level", j, i)]] <- level[-index, ]
-
-        level <- level[index, ]
-
-        i <- i + 1
-      }
-    } else if (j == 2) {
-
-      # For level 2
-
-      level <- gen_level2_admin_id()
-
-      i <- 1
-      repeat {
-        index <-
-          which(
-            (level$id_start >= dplyr::lag(level$id_start)) &
-              (level$id_end <= dplyr::lag(level$id_end))
-          )
-
-        if (rlang::is_empty(index)) break
-
-        admin_environ[[paste0("level", j, i)]] <- level[-index, ]
-
-        level <- level[index, ]
-
-        i <- i + 1
-      }
-    } else if (j == 1) {
-
-      # For level 1
-
-      level <- gen_level1_admin_id()
-
-      admin_environ[["level1"]] <- level
-    }
-
-    index_names <-
-      rlang::env_names(admin_environ) %>%
-      sort()
-  }
-
-  return(index_names)
-}
-
-
 #' Admin Assign
 #'
 #' @description The most computational expansive, this function assigns the
@@ -96,148 +10,101 @@ gen_unique_index_range <- function() {
 #'   rulers and the second data set consists only of the administrative areas
 #'   (so the second dataset is basically everything but the rulers)
 #'
-assign_admin_to_ruler <- function() {
-  group_id_dataset <- gen_group_id()
+gen_admin_regions <- function() {
+  base_dataset <- gen_group_id()
 
-  ruler_data <- ruler_subset(group_id_dataset)
+  ruler_data <-
+    ruler_subset(base_dataset) %>%
+    dplyr::mutate(
+      unique_index = 1:dplyr::n()
+    )
+
+  # Assign names of index ranges (like "level51" and "level52") to the variable
+  # admin names
 
   admin_names <- gen_unique_index_range()
 
+  # Loop trough all unique index ranges and assign the admin regions to the
+  # rulers
+
   for (j in admin_names) {
 
-    # admin_environ = name of the environment where the data sets are stored and
-    # j is the name of the individual data sets
+    # admin_id_end must always be at least as big as admin_id_start! Otherwise
+    # foverlaps() will throw an error
 
-    admin_data <- rlang::env_get(admin_environ, nm = j) # nm = name of dataset
+    admin_data <-
+      rlang::env_get(admin_environ, nm = j) %>%
+      dplyr::filter(
+        admin_id_end >= admin_id_start
+      )
 
-    # Determining whether the current string represents level 5, level 4, level
-    # 3, level 2 or level 1
+    # It is paramount that one distinguishes between the different id levels as
+    # the assignment process is different for the different id levels.
 
     admin_level <-
       stringr::str_extract(j, "(?<=^level)\\d{1}") %>%
       as.integer()
 
-    # Again, as was the case before, level 2 and level 1 have to be treated
-    # differently than level 5, level 4 and level 3 in terms of mathematical
-    # operations
+    # Next the ids of the ruler needs to be adjusted. Remember that for level
+    # 5, level 4 and level 3 the combination of id group and individual ids is
+    # important! So within the id groups a administrative area is assigned to
+    # a ruler only if the id of the ruler is either bigger or equal to
+    # admin_id_start (the starting id of the admin level) and smaller or equal
+    # to admin_id_end (the ending id of the admin level)
 
     if (admin_level %in% c(3, 4, 5)) {
-
-      # Replacing the retrieved level index with the scalar that is required in
-      # order to manipulate the data table
-
-      # Next the ids of the ruler needs to be adjusted. Remember that for level
-      # 5, level 4 and level 3 the combination of id group and individual ids is
-      # important! So within the id groups a administrative area is assigned to
-      # a ruler only if the id of the ruler is either bigger or equal to
-      # admin_id_start (the starting id of the admin level) and smaller or equal
-      # to admin_id_end (the ending id of the admin level)
-
-      ruler_id <-
+      subset_level <-
         dplyr::case_when(
           admin_level == 5 ~ 3,
           admin_level == 4 ~ 2,
           admin_level == 3 ~ 1
-        ) %>%
-        substr(ruler_data$id, 1, .) %>%
-        as.integer()
+        )
 
-      # Variable to make sure that the id group of the ruler is the same as that
-      # of the administrative area
+      ruler_id_subset <-
+        ruler_data %>%
+        dplyr::mutate(
+          ruler_id = substr(id, 1, subset_level),
+          ruler_id = as.integer(ruler_id),
+          ruler_id_start = ruler_id,
+          ruler_id_end = ruler_id,
+          .after = id
+        )
 
-      ruler_id_group <- ruler_data$id_group
+      data.table::setkey(admin_data, id_group, admin_id_start, admin_id_end)
 
-      # Same as above but only for the id group
+      data.table::setkey(ruler_id_subset, id_group, ruler_id_start, ruler_id_end)
 
-      admin_id_group <- admin_data$id_group
+      # level1 and level2 themselves represent id_groups and thus have to be
+      # treated differently than level5, level4 or level3. Furthermore, the keys
+      # have to be set differently for level1 and level2 as the variable
+      # "id_group" does not exist for them.
+    } else if (admin_level %in% c(1, 2)) {
+      ruler_id_subset <-
+        ruler_data %>%
+        dplyr::mutate(
+          ruler_id = id,
+          ruler_id_start = id_group,
+          ruler_id_end = id_group,
+          .after = id
+        )
 
-      # Lower bound for the ruler id. Thus, the ruler id needs to be at least
-      # as big or bigger than this value in order for the administrative area
-      # to be assigned
+      data.table::setkey(admin_data, admin_id_start, admin_id_end)
 
-      admin_id_start <- admin_data$id_start
-
-      # Upper bound for the ruler id. Thus, the ruler id needs to smaller or
-      # equal to this value.
-
-      admin_id_end <- admin_data$id_end
-
-      for (i in 1:dim(admin_data)[1]) {
-        index <-
-          dplyr::between(
-            ruler_id,
-            left = admin_id_start[i],
-            right = admin_id_end[i]
-          ) & (
-            ruler_id_group == admin_id_group[i]
-          )
-
-        ruler_data[index, j] <- admin_data[i, "ruler"]
-      }
-
-      # Continuing with administrative level 2
-    } else if (admin_level == 2) {
-
-      # Same as before with the difference that for administrative level 2 the
-      # only thing important is the id group of the ruler and the id of the
-      # administrative level. This is because for level 2 id group and id are
-      # the same.
-
-      ruler_id_group <- ruler_data$id_group
-
-      # This here actually is not the individual id as before but rather the id
-      # group that is being created here.
-
-      admin_id_start <- admin_data$id_start
-
-      # Again this here is actually the id group end that is being created here
-
-      admin_id_end <- admin_data$id_end
-
-      # Because id and id group are the same for administrative level 2 it is
-      # not necessary to explicitly control for the id group as it was the case
-      # before.
-
-      for (i in 1:dim(admin_data)[1]) {
-        index <-
-          dplyr::between(
-            ruler_id_group,
-            left = admin_id_start[i],
-            right = admin_id_end[i]
-          )
-
-        ruler_data[index, j] <- admin_data[i, "ruler"]
-      }
-
-      # Continuing with administrative level 1
-    } else if (admin_level == 2) {
-
-      # Same as before with the difference that for administrative level 1 the
-      # only thing important is the id group of the ruler and the id of the
-      # administrative level. This is because for level 2 id group and id are
-      # the same.
-
-      ruler_id_group <- ruler_data$id_group
-
-      # Because the id of administrative level 1 has no range (all ids are
-      # individual, distinct values) the admin_id_start and admin_id_end are the
-      # same value.
-
-      admin_id_start <- admin_data$id
-
-      admin_id_end <- admin_data$id
-
-      for (i in 1:dim(admin_data)[1]) {
-        index <-
-          dplyr::between(
-            ruler_id_group,
-            left = admin_id_start[i],
-            right = admin_id_end[i]
-          )
-
-        ruler_data[index, j] <- admin_data[i, "ruler"]
-      }
+      data.table::setkey(ruler_id_subset, ruler_id_start, ruler_id_end)
     }
+
+    admin_overlap <-
+      data.table::foverlaps(ruler_id_subset, admin_data) %>%
+      dplyr::distinct(unique_index, .keep_all = TRUE) %>%
+      dplyr::select(admin_region, unique_index)
+
+    # The name of the created admin regions needs to be unique and thus gets
+    # assigned the name of unique index range.
+
+    names(admin_overlap)[1] <- j
+
+    ruler_data <-
+      dplyr::left_join(ruler_data, admin_overlap, by = "unique_index")
   }
 
   return(ruler_data)

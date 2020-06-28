@@ -1,3 +1,6 @@
+
+overview_environ <- new.env(parent = emptyenv())
+
 #' Generating overview
 #'
 #' @description This function generates an overview of the available files
@@ -23,77 +26,90 @@ gen_overview <- function(input_path = "D:/km/Truhart") {
   # always the case for excel-files. After the merge the two additional
   # variables can be dropped again.
 
-  overview_pdf <-
-    list.files(
-      path = input_path,
-      pattern = ".pdf$",
-      recursive = TRUE,
-      full.names = TRUE,
-      include.dirs = TRUE,
-      ignore.case = TRUE,
-      all.files = FALSE
-    ) %>%
-    tibble::as_tibble() %>%
-    dplyr::mutate(
-      fuzzy_match = stringr::str_extract(value, "(?<=\\/)[^\\/]*(?=\\.pdf$)"),
-      fuzzy_match = stringr::str_extract(fuzzy_match, "^[^\\_]*")
-    ) %>%
-    dplyr::filter(fuzzy_match != "Truhart")
+  # Only run function if the dataset inside the environment
+  # "overview_environ" does not exists. Else skip the computation part to
+  # save time.
 
-  data.table::setDT(overview_pdf)
+  if (exists("base_dataset", where = base_dataset_environ) == FALSE) {
 
-  overview_excel <-
-    list.files(
-      path = input_path,
-      pattern = ".xlsx$",
-      recursive = TRUE,
-      full.names = TRUE,
-      include.dirs = TRUE,
-      ignore.case = TRUE,
-      all.files = FALSE
-    ) %>%
-    tibble::as_tibble() %>%
-    dplyr::mutate(
-      fuzzy_match = stringr::str_extract(value, "(?<=\\/)[^\\/]*(?=\\.xlsx$)"),
-      fuzzy_match = stringr::str_extract(fuzzy_match, "^[^\\_]*")
-    )
+    # List of available PDF files
 
-  data.table::setDT(overview_excel)
+    overview_pdf <-
+      list.files(
+        path = input_path,
+        pattern = ".pdf$",
+        recursive = TRUE,
+        full.names = TRUE,
+        include.dirs = TRUE,
+        ignore.case = TRUE,
+        all.files = FALSE
+      ) %>%
+      tibble::as_tibble() %>%
+      dplyr::mutate(
+        fuzzy_match = stringr::str_extract(value, "(?<=\\/)[^\\/]*(?=\\.pdf$)"),
+        fuzzy_match = stringr::str_extract(fuzzy_match, "^[^\\_]*")
+      ) %>%
+      dplyr::filter(fuzzy_match != "Truhart")
 
-  overview <-
-    fuzzyjoin::stringdist_left_join(
-      x = overview_excel,
-      y = overview_pdf,
-      by = "fuzzy_match",
-      method = "osa",
-      max_dist = 1
-    ) %>%
-    data.table::as.data.table() %>%
-    dplyr::select(excel_file = value.x, pdf_file = value.y) %>%
-    dplyr::mutate(
-      startpage =
-        as.integer(
+    data.table::setDT(overview_pdf)
+
+    # List of available Excel files
+
+    overview_excel <-
+      list.files(
+        path = input_path,
+        pattern = ".xlsx$",
+        recursive = TRUE,
+        full.names = TRUE,
+        include.dirs = TRUE,
+        ignore.case = TRUE,
+        all.files = FALSE
+      ) %>%
+      tibble::as_tibble() %>%
+      dplyr::mutate(
+        fuzzy_match = stringr::str_extract(value, "(?<=\\/)[^\\/]*(?=\\.xlsx$)"),
+        fuzzy_match = stringr::str_extract(fuzzy_match, "^[^\\_]*")
+      )
+
+    data.table::setDT(overview_excel)
+
+    overview_environ$overview <-
+      fuzzyjoin::stringdist_left_join(
+        x = overview_excel,
+        y = overview_pdf,
+        by = "fuzzy_match",
+        method = "osa",
+        max_dist = 1
+      ) %>%
+      data.table::as.data.table() %>%
+      dplyr::select(excel_file = value.x, pdf_file = value.y) %>%
+      dplyr::mutate(
+        startpage =
+          as.integer(
+            stringi::stri_extract_last_regex(
+              excel_file,
+              "[0-9]+(?=to|-)"
+            )
+          ),
+        endpage =
+          as.integer(
+            stringi::stri_extract_last_regex(
+              excel_file,
+              "(?<=to|-)[0-9]+"
+            )
+          ),
+        continent =
           stringi::stri_extract_last_regex(
             excel_file,
-            "[0-9]+(?=to|-)"
+            "(?<=\\/km\\/Truhart\\/)[A-z]+"
           )
-        ),
-      endpage =
-        as.integer(
-          stringi::stri_extract_last_regex(
-            excel_file,
-            "(?<=to|-)[0-9]+"
-          )
-        ),
-      continent =
-        stringi::stri_extract_last_regex(
-          excel_file,
-          "(?<=\\/km\\/Truhart\\/)[A-z]+"
-        )
-    ) %>%
-    dplyr::arrange(continent, startpage)
+      ) %>%
+      dplyr::arrange(continent, startpage)
+  }
 
-  overview_data <- data.table::as.data.table(overview)
+  overview_data <- overview_environ$overview
+
+  data.table::setDT(overview_data)
 
   return(overview_data)
 }
@@ -126,8 +142,10 @@ read_excel_files <- function(input_path,
         col_names = FALSE,
         col_types = "text",
         .name_repair = "universal"
-      ) %>% data.table::as.data.table()
+      )
   )
+
+  data.table::setDT(concat)
 
   # Not all of the excel files contain a "references" column,
   # since this column was only implemented later on.
@@ -167,7 +185,6 @@ read_excel_files <- function(input_path,
     ) # Removing empty rows
 }
 
-
 base_dataset_environ <- new.env(parent = emptyenv())
 
 #' Creating Base dataframe
@@ -179,10 +196,11 @@ base_dataset_environ <- new.env(parent = emptyenv())
 #'
 gen_dataset <- function() {
 
-  # Only run function if the dataset inside the environment "overview_environ"
-  # does not exists. Else skip the computation part to save time.
+  # Only run function if the dataset inside the environment
+  # "base_dataset_environ" does not exists. Else skip the computation part to
+  # save time.
 
-  if (exists("overview_data", where = base_dataset_environ) == FALSE) {
+  if (exists("base_dataset", where = base_dataset_environ) == FALSE) {
 
 
     # Creating a list of all the available excel files. Important! The rows of

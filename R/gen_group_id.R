@@ -19,8 +19,6 @@ gen_group_id <- function() {
     # either based on the ids starting with only two or three digits and are
     # followed by a point (like 63.11-12)
 
-    # base_dataset <- gen_dataset()
-
     base_dataset <- gen_header()
 
     id_pattern <-
@@ -56,8 +54,9 @@ gen_group_id <- function() {
       ) %>%
       dplyr::mutate(
         id_group = stringr::str_extract(id, id_pattern),
-        id_group = zoo::na.locf(id_group, na.rm = F) %>%
-          as.integer()
+        id_group = zoo::na.locf(id_group, na.rm = F),
+        id_group = as.integer(id_group),
+        .after = id
       )
   }
 

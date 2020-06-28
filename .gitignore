@@ -3,7 +3,11 @@ $ cat .gitignore
 *.Rmd
 
 zwischenablage/
+test_environment/
 
+
+# Specific windows settings files.
+*.ini
 
 # Stata Data
 *.dta
@@ -34,7 +38,7 @@ zwischenablage/
 /*.Rcheck/
 
 # RStudio files
-.Rproj.user/
+.Rproj.user
 
 # knitr and R markdown default cache directories
 *_cache/
@@ -49,6 +53,3 @@ zwischenablage/
 
 # pkgdown site
 docs/
-
-# User Files
-.Rproj.user
