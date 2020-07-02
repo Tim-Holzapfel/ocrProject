@@ -16,7 +16,8 @@ gen_level5_admin_id <- function() {
       (^\\d{2,4}\\.\\d{3}-\\d{3}$)  # Three digits followed by three digits
       ", comments = TRUE)
 
-  # admin_id_end cannot be empty, if it is, it's being replaced by admin_id_start
+  # admin_id_end cannot be empty, if it is, it's being replaced by
+  # admin_id_start
 
   level5 <-
     group_id_dataset %>%
@@ -25,17 +26,29 @@ gen_level5_admin_id <- function() {
     ) %>%
     dplyr::mutate(
       id = gsub(" ", "", id), # id can't contain empty spaces except headers!
-      admin_id_start = stringr::str_extract(id, "(?<=^\\d{2,4}\\.)\\d{3}") %>%
+      admin_id_start = stringr::str_extract(
+        id,
+        "(?<=^\\d{2,4}\\.)\\d{3}"
+      ) %>%
         as.numeric(),
-      admin_id_end = stringr::str_extract(id, "(?<=^\\d{2,4}\\.\\d{3}-)\\d{3}$") %>%
+      admin_id_end = stringr::str_extract(
+        id,
+        "(?<=^\\d{2,4}\\.\\d{3}-)\\d{3}$"
+      ) %>%
         as.numeric(),
-      admin_id_end = dplyr::if_else(is.na(admin_id_end), admin_id_start, admin_id_end),
+      admin_id_end = dplyr::if_else(
+        is.na(admin_id_end),
+        admin_id_start,
+        admin_id_end
+      ),
       range = admin_id_end - admin_id_start
     ) %>%
     dplyr::arrange(id_group, admin_id_start, -range) %>%
-    dplyr::select(admin_region = ruler,
-                  id_group, admin_id_start, admin_id_end, range, id,
-                  dplyr::everything())
+    dplyr::select(
+      admin_region = ruler,
+      id_group, admin_id_start, admin_id_end, range, id,
+      dplyr::everything()
+    )
 }
 
 
@@ -60,17 +73,29 @@ gen_level4_admin_id <- function() {
     ) %>%
     dplyr::mutate(
       id = gsub(" ", "", id), # id can't contain empty spaces except headers!
-      admin_id_start = stringr::str_extract(id, "(?<=^\\d{2,4}\\.)\\d{2}") %>%
+      admin_id_start = stringr::str_extract(
+        id,
+        "(?<=^\\d{2,4}\\.)\\d{2}"
+      ) %>%
         as.integer(),
-      admin_id_end = stringr::str_extract(id, "(?<=^\\d{2,4}\\.\\d{2}-)\\d{2}$") %>%
+      admin_id_end = stringr::str_extract(
+        id,
+        "(?<=^\\d{2,4}\\.\\d{2}-)\\d{2}$"
+      ) %>%
         as.integer(),
-      admin_id_end = dplyr::if_else(is.na(admin_id_end), admin_id_start, admin_id_end),
+      admin_id_end = dplyr::if_else(
+        is.na(admin_id_end),
+        admin_id_start,
+        admin_id_end
+      ),
       range = admin_id_end - admin_id_start
     ) %>%
     dplyr::arrange(id_group, admin_id_start, -range) %>%
-    dplyr::select(admin_region = ruler,
-                  id_group, admin_id_start, admin_id_end, range, id,
-                  dplyr::everything())
+    dplyr::select(
+      admin_region = ruler,
+      id_group, admin_id_start, admin_id_end, range, id,
+      dplyr::everything()
+    )
 }
 
 
@@ -95,20 +120,34 @@ gen_level3_admin_id <- function() {
     ) %>%
     dplyr::mutate(
       id = gsub(" ", "", id), # id can't contain empty spaces except headers!
-      id_group = stringr::str_extract(id, "\\d{2,4}(?=\\.\\d{1})") %>%
+      id_group = stringr::str_extract(
+        id,
+        "\\d{2,4}(?=\\.\\d{1})"
+      ) %>%
         as.integer(),
-      admin_id_start = stringr::str_extract(id, "(?<=^\\d{2,4}\\.)\\d{1}") %>%
+      admin_id_start = stringr::str_extract(
+        id,
+        "(?<=^\\d{2,4}\\.)\\d{1}"
+      ) %>%
         as.integer(),
-      admin_id_end = stringr::str_extract(id, "(?<=^\\d{2,4}\\.\\d{1}-)\\d{1}$") %>%
+      admin_id_end = stringr::str_extract(
+        id,
+        "(?<=^\\d{2,4}\\.\\d{1}-)\\d{1}$"
+      ) %>%
         as.integer(),
-      admin_id_end = dplyr::if_else(is.na(admin_id_end), admin_id_start, admin_id_end),
+      admin_id_end = dplyr::if_else(
+        is.na(admin_id_end),
+        admin_id_start,
+        admin_id_end
+      ),
       range = admin_id_end - admin_id_start
     ) %>%
     dplyr::arrange(id_group, admin_id_start, -range) %>%
-    dplyr::select(admin_region = ruler,
-                    id_group, admin_id_start, admin_id_end, range, id,
-                  dplyr::everything())
-
+    dplyr::select(
+      admin_region = ruler,
+      id_group, admin_id_start, admin_id_end, range, id,
+      dplyr::everything()
+    )
 }
 
 #' @title Index Level 2 Function
@@ -165,7 +204,7 @@ gen_level2_admin_id <- function() {
       dplyr::everything(),
       -id_group,
       -id,
-      ) %>%
+    ) %>%
     dplyr::arrange(admin_id_start, -range)
 }
 
@@ -181,7 +220,8 @@ gen_level1_admin_id <- function() {
 
   group_id_dataset <- gen_group_id()
 
-  level1 <- gen_group_id() %>%
+  level1 <-
+    group_id_dataset %>%
     dplyr::filter(
       stringr::str_detect(id, "^\\d{2,4}\\.$") == TRUE
     ) %>%
@@ -192,5 +232,4 @@ gen_level1_admin_id <- function() {
       .before = 1
     ) %>%
     dplyr::select(-c("ruler", "id_group", "id"))
-
 }

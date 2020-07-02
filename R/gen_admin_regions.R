@@ -72,7 +72,10 @@ gen_admin_regions <- function() {
 
       data.table::setkey(admin_data, id_group, admin_id_start, admin_id_end)
 
-      data.table::setkey(ruler_id_subset, id_group, ruler_id_start, ruler_id_end)
+      data.table::setkey(
+        ruler_id_subset, id_group, ruler_id_start,
+        ruler_id_end
+      )
 
       # level1 and level2 themselves represent id_groups and thus have to be
       # treated differently than level5, level4 or level3. Furthermore, the keys

@@ -10,7 +10,7 @@ gen_deathyear <- function() {
   # bracket. The opening bracket can be followed by any number as long as it
   # is not year.
 
-  base_dataset <- gen_dataset()
+  base_dataset <- gen_base_dataset()
 
   year_loc <-
     stringr::regex("

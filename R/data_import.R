@@ -30,7 +30,7 @@ gen_overview <- function(input_path = "D:/km/Truhart") {
   # "overview_environ" does not exists. Else skip the computation part to
   # save time.
 
-  if (exists("base_dataset", where = base_dataset_environ) == FALSE) {
+  if (exists("overview_data", where = overview_environ) == FALSE) {
 
     # List of available PDF files
 
@@ -67,8 +67,14 @@ gen_overview <- function(input_path = "D:/km/Truhart") {
       ) %>%
       tibble::as_tibble() %>%
       dplyr::mutate(
-        fuzzy_match = stringr::str_extract(value, "(?<=\\/)[^\\/]*(?=\\.xlsx$)"),
-        fuzzy_match = stringr::str_extract(fuzzy_match, "^[^\\_]*")
+        fuzzy_match = stringr::str_extract(
+          value,
+          "(?<=\\/)[^\\/]*(?=\\.xlsx$)"
+        ),
+        fuzzy_match = stringr::str_extract(
+          fuzzy_match,
+          "^[^\\_]*"
+        )
       )
 
     data.table::setDT(overview_excel)
@@ -194,7 +200,7 @@ base_dataset_environ <- new.env(parent = emptyenv())
 #'
 #' @return input_data
 #'
-gen_dataset <- function() {
+gen_base_dataset <- function() {
 
   # Only run function if the dataset inside the environment
   # "base_dataset_environ" does not exists. Else skip the computation part to
@@ -233,4 +239,6 @@ gen_dataset <- function() {
   }
 
   base_dataset <- base_dataset_environ$base_dataset
+
+  return(base_dataset)
 }
