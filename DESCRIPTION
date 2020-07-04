@@ -28,6 +28,7 @@ Imports:
     stringr,
     tibble,
     tidyr,
+    XML,
     rlang,
-    zoo,
-    magrittr
+    magrittr,
+    zoo

@@ -32,27 +32,6 @@ gen_overview <- function(input_path = "D:/km/Truhart") {
 
   if (exists("overview_data", where = overview_environ) == FALSE) {
 
-    # List of available PDF files
-
-    overview_pdf <-
-      list.files(
-        path = input_path,
-        pattern = ".pdf$",
-        recursive = TRUE,
-        full.names = TRUE,
-        include.dirs = TRUE,
-        ignore.case = TRUE,
-        all.files = FALSE
-      ) %>%
-      tibble::as_tibble() %>%
-      dplyr::mutate(
-        fuzzy_match = stringr::str_extract(value, "(?<=\\/)[^\\/]*(?=\\.pdf$)"),
-        fuzzy_match = stringr::str_extract(fuzzy_match, "^[^\\_]*")
-      ) %>%
-      dplyr::filter(fuzzy_match != "Truhart")
-
-    data.table::setDT(overview_pdf)
-
     # List of available Excel files
 
     overview_excel <-
@@ -77,7 +56,61 @@ gen_overview <- function(input_path = "D:/km/Truhart") {
         )
       )
 
-    data.table::setDT(overview_excel)
+    # It's easier to allocate the individual continent_regions to the rulers
+    # when the relevant information are stored inside the excel sheets as meta
+    # data. The function "gen_meta_data" extracts the meta data from the excel
+    # sheets and allocates them accordingly. The meta data of excel files are
+    # stored in the description file of the excel file and can be extracted by
+    # unzipping the excel file. Since the extracted files have to be stored
+    # somewhere, it is convenient to store them in a temporary file that by its
+    # nature gets deleted after the script has run.
+
+    temp_dir <- tempdir()
+
+    gen_meta_data <- function(input_path) {
+      path <- input_path[1]
+
+      doc <-
+        XML::xmlInternalTreeParse(
+          unzip(
+            path,
+            files = "docProps/core.xml",
+            exdir = temp_dir
+          )
+        )
+
+      meta_data <- XML::xmlValue(XML::getNodeSet(doc, "/*/dc:description"))
+    }
+
+    excel_meta_data <-
+      apply(overview_excel, 1, gen_meta_data) %>%
+      stringr::str_split(";", simplify = TRUE) %>%
+      tibble::as_tibble(.name_repair = "universal") %>%
+      dplyr::rename(continent = ...1, continent_region = ...2) %>%
+      dplyr::mutate(
+        continent = stringr::str_extract(continent, "(?<=Continent:).*"),
+        continent_region =
+          stringr::str_extract(continent_region, "(?<=continent_region:).*")
+      )
+
+    # List of available PDF files
+
+    overview_pdf <-
+      list.files(
+        path = input_path,
+        pattern = ".pdf$",
+        recursive = TRUE,
+        full.names = TRUE,
+        include.dirs = TRUE,
+        ignore.case = TRUE,
+        all.files = FALSE
+      ) %>%
+      tibble::as_tibble() %>%
+      dplyr::mutate(
+        fuzzy_match = stringr::str_extract(value, "(?<=\\/)[^\\/]*(?=\\.pdf$)"),
+        fuzzy_match = stringr::str_extract(fuzzy_match, "^[^\\_]*")
+      ) %>%
+      dplyr::filter(fuzzy_match != "Truhart")
 
     overview_environ$overview <-
       fuzzyjoin::stringdist_left_join(
@@ -87,9 +120,11 @@ gen_overview <- function(input_path = "D:/km/Truhart") {
         method = "osa",
         max_dist = 1
       ) %>%
-      data.table::as.data.table() %>%
+      tibble::as_tibble() %>%
       dplyr::select(excel_file = value.x, pdf_file = value.y) %>%
       dplyr::mutate(
+        continent = excel_meta_data$continent,
+        continent_region = excel_meta_data$continent_region,
         startpage =
           as.integer(
             stringi::stri_extract_last_regex(
@@ -103,19 +138,12 @@ gen_overview <- function(input_path = "D:/km/Truhart") {
               excel_file,
               "(?<=to|-)[0-9]+"
             )
-          ),
-        continent =
-          stringi::stri_extract_last_regex(
-            excel_file,
-            "(?<=\\/km\\/Truhart\\/)[A-z]+"
           )
       ) %>%
       dplyr::arrange(continent, startpage)
   }
 
   overview_data <- overview_environ$overview
-
-  data.table::setDT(overview_data)
 
   return(overview_data)
 }

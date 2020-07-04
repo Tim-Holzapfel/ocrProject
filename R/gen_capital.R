@@ -77,8 +77,8 @@ gen_capital <- function() {
       .after = cities
     )
 
-  # Pattern to split capitals by. It is important that commas are ignored that are
-  # within brackets.
+  # Pattern to split capitals by. It is important that commas are ignored that
+  # are within brackets.
 
   split_pattern <-
     stringr::regex("
@@ -90,8 +90,8 @@ gen_capital <- function() {
               ", comments = TRUE)
 
   # In case the capital has changed over time then the individual capitals
-  # (usually accompanied by their respective time period) are usually separated by
-  # a comma.
+  # (usually accompanied by their respective time period) are usually separated
+  # by a comma.
 
   capitals_split <-
     stringr::str_split(capitals$cities_sub, split_pattern, simplify = TRUE) %>%
@@ -101,16 +101,15 @@ gen_capital <- function() {
 
   # Renaming the split capitals
 
-  names(capitals_split) <- paste0("capital", 1:ncol(capitals_split))
+  names(capitals_split) <- paste0("capital", seq_len(ncol(capitals_split)))
 
-
-  # The capitals need "a bit" of tidying before they are ready to be geocoded. For
-  # example it is reasonably to assume that the string that comes after the
+  # The capitals need "a bit" of tidying before they are ready to be geocoded.
+  # For example it is reasonably to assume that the string that comes after the
   # closing bracket (given, of course that the are brackets in the concerning
-  # string) does not contain any information relating to the name of the capital.
-  # Furthermore, information relating to time like p.1550 or c.1490 are not
-  # relevant and in fact would distort the geocoding and therefore also need to be
-  # removed.
+  # string) does not contain any information relating to the name of the
+  # capital. Furthermore, information relating to time like p.1550 or c.1490 are
+  # not relevant and in fact would distort the geocoding and therefore also need
+  # to be removed.
 
   tidying_capital <- function(x) {
 
@@ -122,8 +121,8 @@ gen_capital <- function() {
 
     capital <- stringr::str_replace_all(capital, "[a-z]\\.\\s?\\d{2,4}", "")
 
-    # removing time periods (first time periods should be removed and then single
-    # years as otherwise the combining - would be remain as a leftover)
+    # removing time periods (first time periods should be removed and then
+    # single years as otherwise the combining - would be remain as a leftover)
 
     capital <- stringr::str_replace_all(capital, "\\d{1,4}-\\d{1,4}", "")
 
@@ -142,13 +141,13 @@ gen_capital <- function() {
     tibble::as_tibble()
 
   # The brackets that sometimes follow the capital names usually contain an
-  # alternative name for the aforementioned capital and experience has shown that
-  # these alternative names are usually easier to geocode (meaning that they get
-  # found more often by geocoding services like googlemaps or geonames). The same
-  # logic applies to names separated by a forward slash like Denab/Fashoda.
-  # However, unlike the alternative names inside the brackets it seems that the
-  # alternative names following the forward slash are in fact NOT easier to
-  # geocode but rather the other way around.
+  # alternative name for the aforementioned capital and experience has shown
+  # that these alternative names are usually easier to geocode (meaning that
+  # they get found more often by geocoding services like googlemaps or
+  # geonames). The same logic applies to names separated by a forward slash like
+  # Denab/Fashoda. However, unlike the alternative names inside the brackets it
+  # seems that the alternative names following the forward slash are in fact NOT
+  # easier to geocode but rather the other way around.
 
   capital1_alt_names <-
     capitals_tidy %>%
@@ -157,8 +156,8 @@ gen_capital <- function() {
       capital1 = stringr::str_replace(capital1, "\\(.*\\)", "")
     )
 
-  # Same logic as before: split capitals by forward slash to separate "first" name
-  # from alternative name.
+  # Same logic as before: split capitals by forward slash to separate "first"
+  # name from alternative name.
 
   capital1_alt_names_split <-
     stringr::str_split(capital1_alt_names$capital1, "/", simplify = TRUE) %>%
