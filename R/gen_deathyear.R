@@ -1,14 +1,19 @@
 
-#' @title death year
+#' death year
 #'
 #' @description Generating the death year
+#'
+#' @export
 #'
 gen_deathyear <- function() {
 
   # Regular Expression pattern to locate the death year. It looks for the
   # presence of three or four digits number (year) that comes after an opening
-  # bracket. The opening bracket can be followed by any number as long as it
-  # is not year.
+  # bracket. The opening bracket can be followed by any number as long as it is
+  # not year. Important: the regular expression should not involve a closing
+  # bracket at the end because that would exclude birth years where the death
+  # year was unknown as those cases usually follow a pattern similar to this:
+  # "(name of the city 1460-".
 
   base_dataset <- gen_base_dataset()
 
@@ -27,7 +32,7 @@ gen_deathyear <- function() {
   # that the ruler was assassinated). \U2020 is the Unicode string for the
   # normal cross and \U2021 is the Unicode string for the double cross.
 
-  df <-
+  deathyear_full <-
     base_dataset %>%
     dplyr::mutate(
       death = dplyr::if_else(
@@ -48,8 +53,8 @@ gen_deathyear <- function() {
   # year_base variable in which the years that contained an approximation in
   # the form of a forward slash "/" have been cut out.
 
-  df_year <-
-    df %>%
+  death_year_sub <-
+    deathyear_full %>%
     ruler_subset() %>% # subset of data frame containing ruler
     dplyr::filter(
       stringr::str_detect(ruler, year_loc) == TRUE
@@ -60,8 +65,28 @@ gen_deathyear <- function() {
         year_base, # lower estimate bound
         "(\\d{3,4})(\\/\\d{1,4})",
         "\\1"
-      )
+      ),
+      .after = ruler
     )
+
+  # death_place <-
+  #   stringr::str_split(
+  #     death_year_sub$year_base,
+  #     "(?<=\\d{2,4})-",
+  #     simplify = TRUE,
+  #     n = 2
+  #     ) %>%
+  #   tibble::as_tibble(.name_repair = "universal") %>%
+  #   dplyr::select(birth_year = ...1, death_year = ...2) %>%
+  #   dplyr::mutate(
+  #     birth_year_test = gsub("n\\.", "", birth_year),
+  #     birth_year_test = gsub("c\\.", "", birth_year_test),
+  #     birth_year_test = gsub("p\\.", "", birth_year_test),
+  #     birth_place = stringr::str_extract(birth_year, "[A-z\\-\\/ ]+")
+  #   )
+
+
+
 
   # Est contains the estimated year that was cut away from the variable
   # "year_l". That means if the year was approximated in the form of 1576/77
@@ -70,7 +95,7 @@ gen_deathyear <- function() {
   # the approximation, in this case the string 77.
 
   est <-
-    stringr::str_extract(df_year$year_base, "(?<=\\d{3,4}\\/)\\d+")
+    stringr::str_extract(death_year_sub$year_base, "(?<=\\d{3,4}\\/)\\d+")
 
   # This variable, est_pos, is an auxiliary variable that is used to locate
   # the position or to determine the location of the approximated year. More
@@ -79,7 +104,7 @@ gen_deathyear <- function() {
 
   est_pos <-
     stringr::str_locate(
-      df_year$year_base,
+      death_year_sub$year_base,
       "(?<=\\d{3,4})\\/\\d{1,4}"
     )
 
@@ -100,17 +125,17 @@ gen_deathyear <- function() {
   # actually expected to contain BOTH the starting position AND the ending
   # position of the replacement.
 
-  df_year$year_u <-
+  death_year_sub$year_u <-
     stringi::stri_sub_replace(
-      df_year$year_l,
+      death_year_sub$year_l,
       from = est_pos_cor,
       replacement = est
     )
 
   # This last step now creates the final dataframe.
 
-  df_final <-
-    df_year %>%
+  death_year_final <-
+    death_year_sub %>%
     dplyr::mutate(
       year_u = dplyr::if_else(is.na(year_u), year_l, year_u),
       birthyear_l =
@@ -130,11 +155,11 @@ gen_deathyear <- function() {
     ) %>%
     dplyr::select(-c("year_base", "year_u", "year_l"))
 
-  # Subset of the "df_final" dataset that only contains observation that
+  # Subset of the "death_year_final" dataset that only contains observation that
   # specified either a birth -or a death year for the ruler.
 
   df_final_full <-
-    df_final %>%
+    death_year_final %>%
     dplyr::select(birthyear_l, birthyear_u, deathyear_l, deathyear_u, N) %>%
-    dplyr::full_join(df, ., by = "N")
+    dplyr::full_join(deathyear_full, ., by = "N")
 }

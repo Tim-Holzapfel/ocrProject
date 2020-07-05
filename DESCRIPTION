@@ -21,14 +21,15 @@ Depends:
 Imports: 
     data.table,
     dplyr,
+    furrr,
     fuzzyjoin,
-    purrr,
     readxl,
+    rlang,
     stringi,
     stringr,
     tibble,
     tidyr,
+    utils,
     XML,
-    rlang,
     magrittr,
     zoo

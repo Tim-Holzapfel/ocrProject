@@ -8,6 +8,8 @@ group_id_envir <- new.env(parent = emptyenv())
 #'
 #' @return group_id_dataset
 #'
+#' @export
+#'
 gen_group_id <- function() {
 
   # Only run function if the dataset inside the environment "group_id_envir"

@@ -7,6 +7,8 @@
 #' @param dev_mode When set to TRUE stops the execution early and returns the
 #'   intermediate dataset required for testing
 #'
+#' @export
+#'
 gen_header <- function(dev_mode = FALSE) {
 
   # Sometimes part of the ruler column was mistakenly put into the Reference

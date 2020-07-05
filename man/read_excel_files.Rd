@@ -7,6 +7,7 @@
 read_excel_files(
   input_path,
   input_continent = NA,
+  input_continent_region = NA,
   input_startpage = NA,
   input_endpage = NA,
   input_pdf_file = NA
@@ -16,6 +17,8 @@ read_excel_files(
 \item{input_path}{Path to the directory where the Truhart files are saved}
 
 \item{input_continent}{Name of the continent the Excel file refers to}
+
+\item{input_continent_region}{Name of the continent region the Excel file refers to}
 
 \item{input_startpage}{Starting page of the Excel file}
 

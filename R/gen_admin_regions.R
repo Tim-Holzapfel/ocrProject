@@ -10,6 +10,8 @@
 #'   rulers and the second data set consists only of the administrative areas
 #'   (so the second dataset is basically everything but the rulers)
 #'
+#' @export
+#'
 gen_admin_regions <- function() {
   base_dataset <- gen_group_id()
 
