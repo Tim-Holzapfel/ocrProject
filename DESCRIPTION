@@ -31,5 +31,8 @@ Imports:
     tidyr,
     utils,
     XML,
+    DT,
+    shiny,
     magrittr,
-    zoo
+    zoo,
+    haven

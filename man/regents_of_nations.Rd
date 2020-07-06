@@ -5,7 +5,7 @@
 \alias{regents_of_nations}
 \title{Final dataset produced by this package}
 \format{
-An object of class \code{data.table} (inherits from \code{data.frame}) with 76213 rows and 34 columns.
+An object of class \code{data.table} (inherits from \code{data.frame}) with 76209 rows and 34 columns.
 }
 \usage{
 regents_of_nations

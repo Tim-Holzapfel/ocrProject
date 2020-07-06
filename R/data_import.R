@@ -283,7 +283,7 @@ gen_base_dataset <- function() {
     # Arabic number and finally returns the month the roman numeral represented
     # based on the Arabic number
 
-    roman_to_alpha <- function(x) month.abb[utils:::.roman2numeric(x)]
+    roman_to_alpha <- function(x) month.abb[roman2numeric(x)]
 
     # Truhart had a rather specific style when it comes to writing dates as
     # Truhart used roman numerals to specify the month. This can be very
