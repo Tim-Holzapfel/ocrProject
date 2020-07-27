@@ -39,10 +39,16 @@ gen_deathyear <- function() {
         stringr::str_detect(ruler, "\U2020"), 1, 0,
         missing = 0
       ),
+      b_known = dplyr::if_else(
+        stringr::str_detect(ruler, "\\d{3,4}\\s?-$") &
+          stringr::str_detect(id, "^\\d{3}$"), 1, 0,
+        missing = 0
+      ), # string ends with hyphen - only birthyear known but not deathyear
       murdered = dplyr::if_else(
         stringr::str_detect(ruler, "\U2021"), 1, 0,
         missing = 0
-      )
+      ),
+      .after = references
     )
 
   # Constructing the "building frame" by creating the "base year". Base year
@@ -55,38 +61,27 @@ gen_deathyear <- function() {
 
   death_year_sub <-
     deathyear_full %>%
+    dplyr::select(-c(
+      "continent", "continent_region", "startpage", "endpage",
+      "pdf_file", "excel_sheet", "excel_row"
+    )) %>%
     ruler_subset() %>% # subset of data frame containing ruler
     dplyr::filter(
       stringr::str_detect(ruler, year_loc) == TRUE
     ) %>%
     dplyr::mutate(
-      year_base = stringr::str_extract(ruler, year_loc), # initial string
+      year_base = stringi::stri_extract_last_regex(
+        ruler,
+        year_loc,
+        comments = TRUE
+      ), # initial string
       year_l = stringr::str_replace_all(
         year_base, # lower estimate bound
         "(\\d{3,4})(\\/\\d{1,4})",
         "\\1"
       ),
-      .after = ruler
+      .after = references
     )
-
-  # death_place <-
-  #   stringr::str_split(
-  #     death_year_sub$year_base,
-  #     "(?<=\\d{2,4})-",
-  #     simplify = TRUE,
-  #     n = 2
-  #     ) %>%
-  #   tibble::as_tibble(.name_repair = "universal") %>%
-  #   dplyr::select(birth_year = ...1, death_year = ...2) %>%
-  #   dplyr::mutate(
-  #     birth_year_test = gsub("n\\.", "", birth_year),
-  #     birth_year_test = gsub("c\\.", "", birth_year_test),
-  #     birth_year_test = gsub("p\\.", "", birth_year_test),
-  #     birth_place = stringr::str_extract(birth_year, "[A-z\\-\\/ ]+")
-  #   )
-
-
-
 
   # Est contains the estimated year that was cut away from the variable
   # "year_l". That means if the year was approximated in the form of 1576/77
@@ -151,15 +146,52 @@ gen_deathyear <- function() {
       deathyear_l = stringi::stri_extract_last_regex(year_l, "\\d{3,4}") %>%
         as.integer(),
       deathyear_u = stringi::stri_extract_last_regex(year_u, "\\d{3,4}") %>%
-        as.integer()
+        as.integer(),
+      age_l = deathyear_l - birthyear_l,
+      age_u = deathyear_u - birthyear_u,
+      .after = references
     ) %>%
-    dplyr::select(-c("year_base", "year_u", "year_l"))
+    dplyr::filter(age_l > 0 | is.na(age_l)) %>%
+    dplyr::select(-c("year_base", "year_u", "year_l")) # removing aux variables
+
+
+
 
   # Subset of the "death_year_final" dataset that only contains observation that
   # specified either a birth -or a death year for the ruler.
 
   df_final_full <-
     death_year_final %>%
-    dplyr::select(birthyear_l, birthyear_u, deathyear_l, deathyear_u, N) %>%
-    dplyr::full_join(deathyear_full, ., by = "N")
+    dplyr::select(
+      birthyear_l,
+      birthyear_u,
+      deathyear_l,
+      deathyear_u,
+      N,
+      age_l,
+      age_u
+    ) %>%
+    dplyr::full_join(deathyear_full, ., by = "N") %>%
+    dplyr::select(
+      id, period, ruler, references, birthyear_l, birthyear_u,
+      deathyear_l, deathyear_u, age_l, age_u, dplyr::everything()
+    )
 }
+
+
+
+# death_place <-
+#   stringr::str_split(
+#     death_year_sub$year_base,
+#     "(?<=\\d{2,4})-",
+#     simplify = TRUE,
+#     n = 2
+#     ) %>%
+#   tibble::as_tibble(.name_repair = "universal") %>%
+#   dplyr::select(birth_year = ...1, death_year = ...2) %>%
+#   dplyr::mutate(
+#     birth_year_test = gsub("n\\.", "", birth_year),
+#     birth_year_test = gsub("c\\.", "", birth_year_test),
+#     birth_year_test = gsub("p\\.", "", birth_year_test),
+#     birth_place = stringr::str_extract(birth_year, "[A-z\\-\\/ ]+")
+#   )

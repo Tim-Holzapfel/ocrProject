@@ -4,7 +4,7 @@
 \alias{gen_overview}
 \title{Generating overview}
 \usage{
-gen_overview(input_path = "D:/km/Truhart")
+gen_overview(input_path = "D:/lehrstuhl_wirtschaftsgeschichte/km/Truhart")
 }
 \arguments{
 \item{input_path}{Path to the directory where the Truhart files are saved}

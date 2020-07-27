@@ -11,4 +11,5 @@ regents_of_nations <- export_data %>%
 save(regents_of_nations, file = "data/regents_of_nations.rda")
 
 save(regents_of_nations,
-     file = "D:/Uni Tuebingen/Master/Kurse/MasterThesisTimHolzapfel/data/regents_of_nations.rda")
+  file = "D:/Uni Tuebingen/Master/Kurse/MasterThesisTimHolzapfel/data/regents_of_nations.rda"
+)

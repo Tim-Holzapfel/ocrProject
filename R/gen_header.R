@@ -22,7 +22,7 @@ gen_header <- function(dev_mode = FALSE) {
   # specifying the country and the ID column contains the header specifying the
   # region.
 
-  base_dataset <- gen_deathyear()
+  base_dataset <- gen_reign_summary()
 
   header <-
     base_dataset %>%

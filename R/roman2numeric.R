@@ -1,3 +1,13 @@
+#' roman2numeric
+#'
+#' @param x roman number
+#'
+#' @author R Core Team
+#'
+#' @note This code was taken directly from the R base package utils and needed
+#' to be extracted because it utils did not export it.
+#'
+
 roman2numeric <- function(x) {
   out <- integer(length(x))
   out[ina <- is.na(x) | !nzchar(x)] <- NA

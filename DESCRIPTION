@@ -15,7 +15,7 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Depends: 
     R (>= 4.0.0)
 Imports: 
@@ -29,10 +29,7 @@ Imports:
     stringr,
     tibble,
     tidyr,
-    utils,
     XML,
-    DT,
-    shiny,
     magrittr,
     zoo,
     haven

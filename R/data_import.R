@@ -13,7 +13,7 @@ overview_environ <- new.env(parent = emptyenv())
 #'
 #' @export
 #'
-gen_overview <- function(input_path = "D:/km/Truhart") {
+gen_overview <- function(input_path = "D:/lehrstuhl_wirtschaftsgeschichte/km/Truhart") {
 
   # Creating a list of all the available excel files. Important! The rows of the
   # overview function "excel_files" need to be ordered
@@ -302,6 +302,11 @@ gen_base_dataset <- function() {
     base_dataset_final <-
       base_dataset_init %>%
       dplyr::mutate(
+        period = stringr::str_replace_all(
+          period,
+          "(\\s?l\\s?)([0-9][0-9][0-9])",
+          "1\\2"
+        ),
         ruler = stringr::str_replace_all(
           ruler,
           "([XVI]+\\.)(\\s)(\\d{2,4})",
