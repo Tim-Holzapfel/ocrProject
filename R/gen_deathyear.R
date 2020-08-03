@@ -39,11 +39,6 @@ gen_deathyear <- function() {
         stringr::str_detect(ruler, "\U2020"), 1, 0,
         missing = 0
       ),
-      b_known = dplyr::if_else(
-        stringr::str_detect(ruler, "\\d{3,4}\\s?-$") &
-          stringr::str_detect(id, "^\\d{3}$"), 1, 0,
-        missing = 0
-      ), # string ends with hyphen - only birthyear known but not deathyear
       murdered = dplyr::if_else(
         stringr::str_detect(ruler, "\U2021"), 1, 0,
         missing = 0
@@ -65,7 +60,8 @@ gen_deathyear <- function() {
       "continent", "continent_region", "startpage", "endpage",
       "pdf_file", "excel_sheet", "excel_row"
     )) %>%
-    ruler_subset() %>% # subset of data frame containing ruler
+    ruler_subset() %>%
+    # subset of data frame containing ruler
     dplyr::filter(
       stringr::str_detect(ruler, year_loc) == TRUE
     ) %>%
@@ -127,9 +123,10 @@ gen_deathyear <- function() {
       replacement = est
     )
 
-  # This last step now creates the final dataframe.
+  # Using the variables created before to calculate the age and to a binary
+  # variable indicating whether or not the birth year was known
 
-  death_year_final <-
+  death_year_sub_age <-
     death_year_sub %>%
     dplyr::mutate(
       year_u = dplyr::if_else(is.na(year_u), year_l, year_u),
@@ -150,15 +147,24 @@ gen_deathyear <- function() {
       age_l = deathyear_l - birthyear_l,
       age_u = deathyear_u - birthyear_u,
       .after = references
-    ) %>%
-    dplyr::filter(age_l > 0 | is.na(age_l)) %>%
+    )
+
+
+  # Generating control data set to see which ages are negative
+
+  control_data_negative_age <-
+    death_year_sub_age %>%
+    dplyr::filter(
+      age_l < 0
+    )
+
+  death_year_final <-
+    death_year_sub_age %>%
+    dplyr::filter(age_l > 0 | is.na(age_l)) %>% # a negative age is a computation error
     dplyr::select(-c("year_base", "year_u", "year_l")) # removing aux variables
 
-
-
-
-  # Subset of the "death_year_final" dataset that only contains observation that
-  # specified either a birth -or a death year for the ruler.
+  # Subset of the "death_year_final" dataset that only contains observations
+  # that specified either a birth -or a death year for the ruler.
 
   df_final_full <-
     death_year_final %>%
@@ -172,11 +178,21 @@ gen_deathyear <- function() {
       age_u
     ) %>%
     dplyr::full_join(deathyear_full, ., by = "N") %>%
-    dplyr::select(
-      id, period, ruler, references, birthyear_l, birthyear_u,
-      deathyear_l, deathyear_u, age_l, age_u, dplyr::everything()
+    dplyr::mutate(
+      birthyear_known =
+        dplyr::case_when(
+          stringi::stri_detect_regex(id, "^\\d{3}$", negate = TRUE) ~ as.integer(NA),
+          !is.na(birthyear_l) ~ as.integer(1),
+          TRUE ~ as.integer(0)
+
+      )
     )
+
+  return(df_final_full)
 }
+
+
+options(enhancedView.standard_view = FALSE)
 
 
 
@@ -195,3 +211,35 @@ gen_deathyear <- function() {
 #     birth_year_test = gsub("p\\.", "", birth_year_test),
 #     birth_place = stringr::str_extract(birth_year, "[A-z\\-\\/ ]+")
 #   )
+
+
+
+
+# This last step now creates the final dataframe.
+#
+# death_year_final <-
+#   death_year_sub %>%
+#   dplyr::mutate(
+#     year_u = dplyr::if_else(is.na(year_u), year_l, year_u),
+#     birthyear_l =
+#       stringr::str_extract(year_l, "\\d{3,4}(?=\\s?-)") %>%
+#       as.integer(),
+#     birthyear_u =
+#       stringr::str_extract(year_u, "\\d{3,4}(?=\\s?-)") %>%
+#       as.integer(),
+#     year_l =
+#       stringr::str_remove(year_l, "\\d{3,4}(?=\\s?-)"),
+#     year_u =
+#       stringr::str_remove(year_u, "\\d{3,4}(?=\\s?-)"),
+#     deathyear_l = stringi::stri_extract_last_regex(year_l, "\\d{3,4}") %>%
+#       as.integer(),
+#     deathyear_u = stringi::stri_extract_last_regex(year_u, "\\d{3,4}") %>%
+#       as.integer(),
+#     age_l = deathyear_l - birthyear_l,
+#     age_u = deathyear_u - birthyear_u,
+#     birthyear_known =
+#       .after = references
+#   ) %>%
+#   dplyr::filter(age_l > 0 | is.na(age_l)) %>%
+#   dplyr::select(-c("year_base", "year_u", "year_l")) # removing aux variables
+#

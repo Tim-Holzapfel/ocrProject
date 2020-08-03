@@ -316,6 +316,11 @@ gen_base_dataset <- function() {
           ruler,
           "([XVI]+(?=\\.\\s?\\d{2,4}))",
           roman_to_alpha
+        ),
+        ruler = stringi::stri_replace_first_regex(
+          ruler, # removing white space in: 1 1771
+          "(?:\\s)(\\d{1})(?:\\s)(\\d{3})",
+          "$1$2"
         )
       )
 
