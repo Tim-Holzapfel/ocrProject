@@ -13,7 +13,13 @@
 #' @export
 #'
 gen_admin_regions <- function() {
-  base_dataset <- gen_group_id()
+
+  base_dataset <-
+    gen_group_id() %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(
+      original_sort = 1:dplyr::n()
+    )
 
   ruler_data <-
     ruler_subset(base_dataset) %>%
@@ -100,8 +106,8 @@ gen_admin_regions <- function() {
 
     admin_overlap <-
       data.table::foverlaps(ruler_id_subset, admin_data) %>%
-      dplyr::distinct(unique_index, .keep_all = TRUE) %>%
-      dplyr::select(admin_region, unique_index)
+      dplyr::distinct(original_sort, .keep_all = TRUE) %>%
+      dplyr::select(admin_region, original_sort)
 
     # The name of the created admin regions needs to be unique and thus gets
     # assigned the name of unique index range.
@@ -109,8 +115,30 @@ gen_admin_regions <- function() {
     names(admin_overlap)[1] <- j
 
     ruler_data <-
-      dplyr::left_join(ruler_data, admin_overlap, by = "unique_index")
+      dplyr::left_join(ruler_data, admin_overlap, by = "original_sort") %>%
+      dplyr::arrange(original_sort)
   }
 
-  return(ruler_data)
+  ruler_full <-
+    base_dataset %>%
+    dplyr::filter(
+      stringr::str_detect(id, "^\\d{3}$", negate = TRUE)
+    )
+
+  names_ruler_data <- names(ruler_data)[which(names(ruler_data) %notin% names(ruler_full))]
+
+  ruler_full[, names_ruler_data] <- character()
+
+  ruler_full$unique_index <- as.integer(ruler_full$unique_index)
+
+  ruler_final <-
+    rbind(ruler_full, ruler_data) %>%
+    dplyr::arrange(original_sort) %>%
+    dplyr::relocate(id, period, ruler, tidyselect::all_of(names_ruler_data))
+
+  return(ruler_final)
+
+
 }
+
+

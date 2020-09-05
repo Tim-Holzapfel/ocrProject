@@ -56,10 +56,6 @@ gen_deathyear <- function() {
 
   death_year_sub <-
     deathyear_full %>%
-    dplyr::select(-c(
-      "continent", "continent_region", "startpage", "endpage",
-      "pdf_file", "excel_sheet", "excel_row"
-    )) %>%
     ruler_subset() %>%
     # subset of data frame containing ruler
     dplyr::filter(
@@ -192,7 +188,7 @@ gen_deathyear <- function() {
 }
 
 
-options(enhancedView.standard_view = FALSE)
+#options(enhancedView.standard_view = FALSE)
 
 
 

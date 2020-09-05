@@ -1,3 +1,13 @@
+
+
+#   ____________________________________________________________________________
+#   ID Level Functions                                                      ####
+
+# This list of functions is never called directly but indirectly by other
+# functions.
+
+
+
 #' @title Level 5 Index
 #'
 #' @description Creating index for all observations at the highest level
