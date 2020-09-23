@@ -19,17 +19,17 @@ RoxygenNote: 7.1.1
 Depends: 
     R (>= 4.0.0)
 Imports: 
+    data.table,
     dplyr,
     stringr,
-    tidyr,
-    data.table,
-    furrr,
-    fuzzyjoin,
-    readxl,
     rlang,
+    tidyr,
+    tidyselect,
+    furrr,
     stringi,
-    tibble,
-    XML,
     magrittr,
+    tibble,
     zoo,
-    haven
+    XML,
+    haven,
+    readxl

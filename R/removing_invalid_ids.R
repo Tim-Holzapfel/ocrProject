@@ -7,7 +7,7 @@
 #'
 #' @export
 #'
-correcting_region_ids <- function() {
+removing_invalid_ids <- function() {
   # Integration point: after gen_header() because then the header rows are gone
   # which makes correcting the regent ids a lot easier.
 
@@ -71,20 +71,24 @@ correcting_region_ids <- function() {
 
   # TODO Find another solution instead of simply dropping the missing IDs
 
-  header_data_corrected <-
+  corrected_data <-
     complete_data %>%
     dplyr::slice(-invalid_ids$unique_id) %>%
     dplyr::mutate(
+      # Binary variable indicating whether the observation is an actual ruler or
+      # a time period.
       region_id = dplyr::if_else(
-        stringr::str_detect(id, "\\/"),
+        stringr::str_detect(id, "^\\d{3}$", negate = TRUE),
         1,
         0
       ),
+      # Removing the slash "/" part of the ID, meaning that of the ID
+      # 7.137/100.784, everything before the slash is being removed (with the
+      # slash being removed as well).
       id = stringr::str_extract(id, "[^\\/]*$"),
       .after = 1
     ) %>%
     tidyr::drop_na(id)
 
-  return(header_data_corrected)
-
+  return(corrected_data)
 }

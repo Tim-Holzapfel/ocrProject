@@ -8,8 +8,9 @@ regents_of_nations <- export_data %>%
     "pdf_file", "page", "unique_index"
   ))
 
-save(regents_of_nations, file = "data/regents_of_nations.rda")
+saveRDS(regents_of_nations, "data/regents_of_nations.RDS")
 
-save(regents_of_nations,
-  file = "D:/Uni Tuebingen/Master/Kurse/MasterThesisTimHolzapfel/data/regents_of_nations.rda"
-)
+saveRDS(regents_of_nations,
+        "D:/uni_tuebingen/Master/Kurse/MasterThesisTimHolzapfel/data/main_data/regents_of_nations.RDS",
+        compress = FALSE)
+

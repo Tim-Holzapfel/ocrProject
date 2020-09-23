@@ -62,3 +62,6 @@ docs/
 
 # exported data
 data/
+
+# excel files
+*.xlsx

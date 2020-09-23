@@ -9,90 +9,9 @@ names_drop <- c(
 
 requireNamespace("tidyselect")
 
-data_export <- removing_invalid_ids() %>%
+data_export <- gen_header() %>%
   dplyr::select(-any_of(names_drop)) %>%
-  dplyr::rename(regent = ruler, region = continent_region) %>%
-  tidyr::drop_na(id) %>%
-  dplyr::relocate(id, period, regent, continent, region, country,
-                  decade, century, half_cen, birthyear_l, birthyear_u,
-                  deathyear_l, deathyear_u, age_l, age_u, birthyear_known,
-                  reign_start, reign_end, reign_length)
-
-
-
-
-
-
-Hmisc::label(data_export$id) <- "Identifier, IDs consisting of only three digits represent regents"
-
-Hmisc::label(data_export$period) <- "Period in which the regent reigned"
-
-Hmisc::label(data_export$regent) <- "Name of the regent"
-
-Hmisc::label(data_export$death) <- "Binary; 1 if it's known that the regent died a natural death, 0 otherwise"
-
-Hmisc::label(data_export$murdered) <- "Binary; 1 if it's known that the regent died a violent death, 0 otherwise"
-
-
-Hmisc::label(data_export$birthyear_l) <- "Lower estimation bound if the birth year was not exactly clear"
-
-Hmisc::label(data_export$birthyear_u) <- "Upper estimation bound if the birth year was not exactly clear"
-
-Hmisc::label(data_export$deathyear_l) <- "Lower estimation bound if the death year was not exactly clear"
-
-Hmisc::label(data_export$deathyear_u) <- "Upper estimation bound if the death year was not exactly clear"
-
-Hmisc::label(data_export$age_l) <- "Lower estimation bound if the age was not exactly clear"
-
-Hmisc::label(data_export$age_u) <- "Upper estimation bound if the age was not exactly clear"
-
-Hmisc::label(data_export$birthyear_known) <- "Binary; 1 if the birth year of the ruler was known, 0 otherwise"
-
-Hmisc::label(data_export$reign_start) <- "Start of the reigning period of the regent"
-
-Hmisc::label(data_export$reign_end) <- "End of the reigning period of the regent"
-
-Hmisc::label(data_export$reign_length) <- "Duration of the reigning period of the ruler"
-
-Hmisc::label(data_export$decade) <- "Decade in which the regent reigned"
-
-Hmisc::label(data_export$century) <- "Century in which the regent reigned"
-
-# attr(data_export, "note") <- c("Testing the notes function", "1")
-
-Hmisc::label(data_export) <-
-  "Regents of Nations, Volumes 1-5, Book Series by Peter Truhart"
-
-
-haven::write_dta(data_export, path = "data/regents_of_nations.dta", version = 14)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#   ____________________________________________________________________________
-#   Experimental code                                                       ####
+  dplyr::rename(regent = ruler, region = continent_region)
 
 
 data_export <-

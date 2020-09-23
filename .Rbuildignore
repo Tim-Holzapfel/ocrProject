@@ -1,6 +1,7 @@
 ^data-raw$
 ^zwischenablage$
 ^test_environment$
+^data$
 [.]Rmd$
 [.]user$
 [.]Rproj$
@@ -10,3 +11,4 @@
 ^\.Rproj\.user$
 [.]dta$
 [.]ini$
+[.]xlsx$

@@ -97,11 +97,12 @@ gen_admin_regions <- function() {
           ruler_id_start = id_group,
           ruler_id_end = id_group,
           .after = id
-        )
-
-      data.table::setkey(admin_data, admin_id_start, admin_id_end)
+        ) %>%
+        tidyr::drop_na(ruler_id_start, ruler_id_end)
 
       data.table::setkey(ruler_id_subset, ruler_id_start, ruler_id_end)
+
+      data.table::setkey(admin_data, admin_id_start, admin_id_end)
     }
 
     admin_overlap <-
@@ -127,7 +128,9 @@ gen_admin_regions <- function() {
 
   names_ruler_data <- names(ruler_data)[which(names(ruler_data) %notin% names(ruler_full))]
 
-  ruler_full[, names_ruler_data] <- character()
+
+
+  ruler_full[seq_len(dim(ruler_full)[1]), names_ruler_data] <- character(dim(ruler_full)[1])
 
   ruler_full$unique_index <- as.integer(ruler_full$unique_index)
 

@@ -53,7 +53,8 @@ gen_header <- function(dev_mode = FALSE) {
       (!is.na(region) & is.na(period) & is.na(country)) |
         (is.na(region) & is.na(period) & !is.na(country))
     ) %>%
-    magrittr::extract2("N")
+    magrittr::extract2("N") %>%
+    as.integer()
 
   # Often a bit of adjustment is necessary in order to make sure that some rows
   # were not selected by mistake. Therefore regular expression are written to
@@ -86,11 +87,11 @@ gen_header <- function(dev_mode = FALSE) {
         page
       ),
       page = as.integer(page),
-      region = stringr::str_remove(region, "^\\d{1,4}") %>%
-        stringr::str_squish(),
-      country = stringr::str_remove(country, "\\d{1,4}$") %>%
-        stringr::str_squish()
-    )
+      region = stringr::str_remove(region, "^\\d{1,4}"),
+      country = stringr::str_remove(country, "\\d{1,4}$")
+    ) %>%
+    dplyr::mutate(dplyr::across(.fns = stringr::str_squish)) %>%
+    dplyr::select(region, country, N, page)
 
   # A lot of the variables needed for testing are not strictly necessary for the
   # final dataset. Furthermore, since the next step is a merge it is important
@@ -113,16 +114,12 @@ gen_header <- function(dev_mode = FALSE) {
 
   merge_data_with_header <-
     dplyr::left_join(base_dataset, header_final, by = "N") %>%
-    dplyr::relocate(
-      id, period, ruler, references, region, country, page
-    ) %>%
     dplyr::mutate(
       region = zoo::na.locf(region, na.rm = FALSE),
       country = zoo::na.locf(country, na.rm = FALSE),
       country = zoo::na.locf(country, na.rm = FALSE, fromLast = TRUE),
       page = zoo::na.locf(page, na.rm = FALSE),
       id = gsub(" ", "", id), # id can't contain empty spaces except headers!
-      pdf_page = page - startpage + 1
     ) %>%
     dplyr::slice(-header_index) %>% # Remove rows containing the header
     dplyr::arrange(continent, startpage, page) # Very important!

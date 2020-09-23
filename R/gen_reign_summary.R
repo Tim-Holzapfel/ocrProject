@@ -40,6 +40,7 @@ gen_reign_summary <- function() {
         !is.na(reign_start) ~ round(reign_start, -2),
         !is.na(reign_end) ~ round(reign_end, -2)
       ),
+      half_cen = round(as.integer(reign_start) / 50) * 50,
       .after = period
     )
 
