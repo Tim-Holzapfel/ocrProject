@@ -72,7 +72,7 @@ gen_base_dataset <- function() {
     base_dataset_final <-
       base_dataset_init %>%
       # Remove leading, trailing and consecutive white spaces.
-      dplyr::mutate(dplyr::across(.fns = stringr::str_squish)) %>%
+      string_squish() %>%
       dplyr::mutate(
         period = stringr::str_replace_all(
           period,

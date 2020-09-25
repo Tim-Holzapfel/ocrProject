@@ -90,7 +90,7 @@ gen_header <- function(dev_mode = FALSE) {
       region = stringr::str_remove(region, "^\\d{1,4}"),
       country = stringr::str_remove(country, "\\d{1,4}$")
     ) %>%
-    dplyr::mutate(dplyr::across(.fns = stringr::str_squish)) %>%
+    string_squish() %>%
     dplyr::select(region, country, N, page)
 
   # A lot of the variables needed for testing are not strictly necessary for the

@@ -75,6 +75,28 @@ gen_overview <- function() {
       meta_data <- XML::xmlValue(XML::getNodeSet(doc, "/*/dc:description"))
     }
 
+
+    ### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+    ### Start: Test for the existence of metadata                           ####
+
+
+    meta_error <-
+      simpleError("
+      Not all of the Excel-files have the necessary meta data attached.
+      Remember, the format for the meta data is for example:
+                  'Continent: Africa; Region: South Africa'.
+                  ")
+
+    meta_data_exist_test <-
+      apply(overview_excel, 1, gen_meta_data)
+
+    if (any(lengths(meta_data_exist_test) == 0)) stop(meta_error)
+
+
+    ### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+    ### End: Test for the existence of metadata                             ####
+
+
     overview_environ$overview <-
       apply(overview_excel, 1, gen_meta_data) %>%
       stringr::str_split(";", simplify = TRUE) %>%
@@ -89,23 +111,19 @@ gen_overview <- function() {
       cbind(overview_excel) %>%
       dplyr::mutate(
         startpage =
-          as.integer(
-            stringi::stri_extract_last_regex(
-              excel_file,
-              "(?<=p)\\d+(?=to|-|_)"
-            )
-          ),
+          stringi::stri_extract_last_regex(
+            excel_file,
+            "(?<=p)\\d+(?=to|-|_)"
+          ) %>% as.integer(),
         endpage =
-          as.integer(
-            stringi::stri_extract_last_regex(
-              excel_file,
-              "(?<=to|-|_)\\d+"
-            )
-          )
+          stringi::stri_extract_last_regex(
+            excel_file,
+            "(?<=\\d{1,4}(to|-|_))\\d+"
+          ) %>% as.integer()
       ) %>%
       dplyr::arrange(continent, startpage) %>%
       # Remove leading, trailing and consecutive white spaces.
-      dplyr::mutate(dplyr::across(.fns = stringr::str_squish))
+      string_squish()
   }
 
   overview_data <- overview_environ$overview

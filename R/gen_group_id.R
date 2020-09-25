@@ -21,7 +21,7 @@ gen_group_id <- function() {
     # either based on the ids starting with only two or three digits and are
     # followed by a point (like 63.11-12)
 
-    base_dataset <- correcting_region_ids()
+    base_dataset <- removing_invalid_ids()
 
     group_id_envir$group_id_data <-
       base_dataset %>%

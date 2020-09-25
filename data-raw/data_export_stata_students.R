@@ -79,18 +79,6 @@ haven::write_dta(data_export, path = "data/regents_of_nations.dta", version = 14
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 #   ____________________________________________________________________________
 #   Experimental code                                                       ####
 
