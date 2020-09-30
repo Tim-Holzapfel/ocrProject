@@ -6,10 +6,10 @@
 \usage{
 read_excel_files(
   input_path,
-  input_continent = NA,
-  input_continent_region = NA,
-  input_startpage = NA,
-  input_endpage = NA
+  input_continent,
+  input_continent_region,
+  input_startpage,
+  input_endpage
 )
 }
 \arguments{

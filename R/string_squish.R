@@ -5,8 +5,6 @@
 #'
 #' @param dataframe_tb dataframe that should be squished
 #'
-#' @export
-#'
 #' @note One thing one has to be careful about is that "str_squish" will return
 #'   variables it has been applied upon as type character. This function
 #'   therefore only selects columns of type character to keep non-string columns

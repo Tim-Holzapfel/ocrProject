@@ -2,6 +2,7 @@
 ^zwischenablage$
 ^test_environment$
 ^data$
+^geonames$
 [.]Rmd$
 [.]user$
 [.]Rproj$

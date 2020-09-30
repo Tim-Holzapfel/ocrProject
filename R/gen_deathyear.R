@@ -3,8 +3,6 @@
 #'
 #' @description Generating the death year
 #'
-#' @export
-#'
 gen_deathyear <- function() {
 
   # Regular Expression pattern to locate the death year. It looks for the

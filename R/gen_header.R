@@ -7,8 +7,6 @@
 #' @param dev_mode When set to TRUE stops the execution early and returns the
 #'   intermediate dataset required for testing
 #'
-#' @export
-#'
 gen_header <- function(dev_mode = FALSE) {
 
   # Sometimes part of the ruler column was mistakenly put into the Reference
@@ -71,6 +69,10 @@ gen_header <- function(dev_mode = FALSE) {
     dplyr::select(
       region, country, excel_row, N,
       excel_sheet, dplyr::everything(), -period
+    ) %>%
+    dplyr::filter(
+      stringi::stri_detect_regex(country, "[sS]\\.", negate = TRUE) %>%
+        stringi::stri_replace_na("TRUE") == "TRUE"
     )
 
   # It makes the debugging a lot easier when it is immediately clear in which
@@ -88,10 +90,11 @@ gen_header <- function(dev_mode = FALSE) {
       ),
       page = as.integer(page),
       region = stringr::str_remove(region, "^\\d{1,4}"),
-      country = stringr::str_remove(country, "\\d{1,4}$")
+      country = stringr::str_remove(country, "\\d{1,4}$"),
+      excel_sheet = file.path(root, excel_sheet) %>% normalizePath()
     ) %>%
     string_squish() %>%
-    dplyr::select(region, country, N, page)
+    dplyr::relocate(region, country, N, page, excel_sheet)
 
   # A lot of the variables needed for testing are not strictly necessary for the
   # final dataset. Furthermore, since the next step is a merge it is important
@@ -114,6 +117,8 @@ gen_header <- function(dev_mode = FALSE) {
 
   merge_data_with_header <-
     dplyr::left_join(base_dataset, header_final, by = "N") %>%
+    dplyr::relocate(region, country, page, startpage, endpage) %>%
+    dplyr::arrange(continent, startpage) %>%
     dplyr::mutate(
       region = zoo::na.locf(region, na.rm = FALSE),
       country = zoo::na.locf(country, na.rm = FALSE),

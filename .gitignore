@@ -50,6 +50,8 @@ test_environment/
 *_cache/
 /cache/
 
+test_environment/
+
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md

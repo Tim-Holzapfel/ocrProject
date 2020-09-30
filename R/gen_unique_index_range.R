@@ -7,8 +7,6 @@ admin_environ <- new.env(parent = emptyenv())
 #' @description Function to determine and return the unique index level of
 #'   all administrative ares
 #'
-#' @export
-#'
 gen_unique_index_range <- function() {
   for (j in 1:5) {
 

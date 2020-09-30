@@ -7,8 +7,6 @@ base_dataset_environ <- new.env(parent = emptyenv())
 #'
 #' @return input_data
 #'
-#' @export
-#'
 gen_base_dataset <- function() {
 
   # Only run function if the dataset inside the environment
@@ -38,9 +36,7 @@ gen_base_dataset <- function() {
 
     base_dataset_init <-
       furrr::future_pmap_dfr(input_list, read_excel_files) %>%
-      dplyr::mutate(
-        dplyr::across(where(is.character), stringr::str_squish)
-      ) %>%
+      string_squish() %>%
       dplyr::mutate(
         ruler = gsub("I11", "III", ruler),
         ruler = stringr::str_replace_all(ruler, "(I\\s?)(\\d{3,4})", "1\\2"),

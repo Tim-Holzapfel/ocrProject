@@ -42,8 +42,6 @@ gen_overview <- function() {
         include.dirs = TRUE,
         all.files = TRUE
       ) %>%
-      # Exclude files in the testing directory
-      stringr::str_subset("test_environment", negate = TRUE) %>%
       # Remove the ./ at the beginning of the string
       stringr::str_sub(start = 3L) %>%
       tibble::as_tibble() %>%
@@ -119,7 +117,8 @@ gen_overview <- function() {
           stringi::stri_extract_last_regex(
             excel_file,
             "(?<=\\d{1,4}(to|-|_))\\d+"
-          ) %>% as.integer()
+          ) %>% as.integer(),
+        excel_file = file.path(root, excel_file) %>% normalizePath()
       ) %>%
       dplyr::arrange(continent, startpage) %>%
       # Remove leading, trailing and consecutive white spaces.

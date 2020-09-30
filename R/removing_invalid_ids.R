@@ -5,8 +5,6 @@
 #'
 #' @return header_data_corrected
 #'
-#' @export
-#'
 removing_invalid_ids <- function() {
   # Integration point: after gen_header() because then the header rows are gone
   # which makes correcting the regent ids a lot easier.
@@ -85,6 +83,7 @@ removing_invalid_ids <- function() {
       # Removing the slash "/" part of the ID, meaning that of the ID
       # 7.137/100.784, everything before the slash is being removed (with the
       # slash being removed as well).
+      id_old = id,
       id = stringr::str_extract(id, "[^\\/]*$"),
       .after = 1
     ) %>%

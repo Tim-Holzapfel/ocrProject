@@ -10,27 +10,27 @@
 #'
 #' @return Excel sheet in data frame format
 #'
-#' @export
-#'
 read_excel_files <- function(input_path,
-                             input_continent = NA,
-                             input_continent_region = NA,
-                             input_startpage = NA,
-                             input_endpage = NA) {
+                             input_continent,
+                             input_continent_region,
+                             input_startpage,
+                             input_endpage) {
 
   # Suppress those annoying "New names:" messages
 
-  suppressMessages(
-    concat <-
-      readxl::read_xlsx(
-        path = input_path,
-        col_names = FALSE,
-        col_types = "text",
-        .name_repair = "universal"
-      )
-  )
 
-  data.table::setDT(concat)
+  # input_path <- "D:/ocrProject/test_environment/excel_files/Truhart3new.p1254to1291.SouthEastAsia_edited_1.xlsx"
+
+
+  #concat <- openxlsx::read.xlsx(input_path, colNames = FALSE)
+
+concat <-
+  readxl::read_xlsx(
+    path = input_path,
+    col_names = FALSE,
+    col_types = "text",
+    .name_repair = "minimal"
+  )
 
   # Not all of the excel files contain a "references" column,
   # since this column was only implemented later on.
@@ -49,11 +49,7 @@ read_excel_files <- function(input_path,
   names(concat) <- c("id", "period", "ruler", "references")
 
   # Important: remove empty rows only after the variable excel_row has been
-  # created, otherwise it loses its explanatory power. Also, it is convenient to
-  # simply copy-paste the excel paste into the address bar of the explorer to
-  # open the excel files. However, for that to be possible it is necessary that
-  # the the forwardslash that R employs be replaced with two backslashes that
-  # windows can use.
+  # created, otherwise it loses its explanatory power.
 
   sheet <-
     concat %>%
@@ -62,7 +58,7 @@ read_excel_files <- function(input_path,
       continent_region = input_continent_region,
       startpage = input_startpage,
       endpage = input_endpage,
-      excel_sheet = gsub("\\/", "\\\\", input_path),
+      excel_sheet = input_path,
       excel_row = paste0("A", 1:dplyr::n()) # Makes it easier to open in Excel
     ) %>%
     dplyr::filter(
