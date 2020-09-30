@@ -90,8 +90,7 @@ gen_header <- function(dev_mode = FALSE) {
       ),
       page = as.integer(page),
       region = stringr::str_remove(region, "^\\d{1,4}"),
-      country = stringr::str_remove(country, "\\d{1,4}$"),
-      excel_sheet = file.path(root, excel_sheet) %>% normalizePath()
+      country = stringr::str_remove(country, "\\d{1,4}$")
     ) %>%
     string_squish() %>%
     dplyr::relocate(region, country, N, page, excel_sheet)

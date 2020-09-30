@@ -15,6 +15,10 @@ gen_capital <- function() {
       na.rm = TRUE
     )
 
+
+
+
+
   # It makes sense to split the task of extracting the name of the capital into
   # multiple parts: first, find the position/location of the ct.: or ct: string,
   # second, locate the end of the string that contains the name of the capital,

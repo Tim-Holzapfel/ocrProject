@@ -19,18 +19,17 @@ RoxygenNote: 7.1.1
 Depends: 
     R (>= 4.0.0)
 Imports: 
-    rstudioapi,
-    data.table,
     dplyr,
-    stringr,
-    rlang,
-    tidyr,
-    tidyselect,
-    furrr,
     stringi,
-    magrittr,
+    stringr,
     tibble,
-    zoo,
     XML,
-    haven,
-    readxl
+    openxlsx,
+    tidyr,
+    data.table,
+    purrr,
+    rlang,
+    magrittr,
+    zoo,
+    tidyselect,
+    rstudioapi

@@ -4,57 +4,255 @@ clear()
 
 admin_regions <-
   readRDS("test_environment/data/admin_regions.RDS") %>%
+  dplyr::relocate(country) %>%
   dplyr::mutate(
     id_unique = dplyr::row_number(),
     .after = 1
   ) %>%
-  dplyr::relocate(country)
+  dplyr::arrange(id_group, id)
 
 library(dplyr)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-countries_mod <-
-  countries %>%
-  dplyr::mutate(
-    country = dplyr::case_when(
-      stringr::str_detect(country, "China") ~ "China",
-      stringr::str_detect(country, "Namibia") ~ "Namibia, Boswana, South Africa, Lesotho",
-      stringr::str_detect(country, "Ehtiopia") ~ "Ehtiopia, Erythrea, Djibouti",
-      stringr::str_detect(country, "Indonesia") ~ "Indonesia",
-      TRUE ~ as.character(country)
-    )
+admin_group_ids <-
+  readRDS("test_environment/data/admin_regions.RDS") %>%
+  dplyr::filter(
+    stringr::str_detect(id, "^\\d{3}$", negate = TRUE)
   ) %>%
-  dplyr::distinct()
+  dplyr::arrange(id_group, id) %>%
+  dplyr::filter(id_group == "66")
+
+
+admin_levels <-
+  admin_regions %>%
+  tidyr::drop_na(unique_index) %>%
+  dplyr::select(dplyr::starts_with("level")) %>%
+  tidyr::unite(
+    "level2",
+    dplyr::starts_with("level2"),
+    sep = "|",
+    na.rm = TRUE
+  ) %>%
+  tidyr::unite(
+    "level3",
+    dplyr::starts_with("level3"),
+    sep = "|",
+    na.rm = TRUE
+  ) %>%
+  tidyr::unite(
+    "level4",
+    dplyr::starts_with("level4"),
+    sep = "|",
+    na.rm = TRUE
+  ) %>%
+  tidyr::unite(
+    "level5",
+    dplyr::starts_with("level5"),
+    sep = "|",
+    na.rm = TRUE
+  ) %>%
+  dplyr::distinct() %>%
+  mutate_all(list(~ na_if(., ""))) %>%
+  janitor::remove_empty("rows")
+
+
+
+country_pattern_regex <-
+  countrycode::codelist %>%
+  dplyr::select(country.name.en.regex, iso3c)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+country_pattern <-
+  countrycode::codelist %>%
+  dplyr::select(country.name.en, iso3c) %>%
+  mutate_all(list(~ na_if(., ""))) %>%
+  tidyr::drop_na(iso3c) %>%
+  dplyr::mutate(
+    country.name.en = stringr::str_replace(country.name.en, "\\(.*\\)", ""),
+    n_chars = nchar(country.name.en)
+  ) %>%
+  dplyr::filter(
+    stringr::str_detect(country.name.en, "Island|\\&", negate = TRUE)
+  ) %>%
+  dplyr::arrange(dplyr::desc(n_chars)) %>%
+  magrittr::extract2("country.name.en") %>%
+  stringi::stri_trans_general("latin-ascii") %>%
+  stringr::str_replace_all(
+    c("\u0027" = "\u0027", "\u2019" = "\u0027", "\u02BC" = "\u0027", "\u00B4" = "\u0027"),
+  ) %>%
+  c("Erythrea", "Djibouti") %>%
+  paste0("\\b", ., "\\b", collapse = "|") %>%
+  paste0("(", ., ")")
+
+country_pattern_tibble <-
+  countrycode::codelist %>%
+  dplyr::select(country.name.en, iso3c)
+
+
+
+
+
+test_pattern <- "\\bMali\\b|Somalia"
+
+
+test_string <- "  Somalia test 5"
+
+stringr::str_extract(test_string, stringr::regex(test_pattern, ignore_case = TRUE))
+
+
+
+
+
+
+result_function <- function(x) {
+  string_count <- stringr::str_count(
+    x,
+    stringr::regex(country_pattern, ignore_case = TRUE)
+  )
+
+  string_extract <- stringr::str_extract(
+    x,
+    stringr::regex(country_pattern, ignore_case = TRUE)
+  )
+
+  result_return <- dplyr::if_else(
+    string_count == 1,
+    string_extract,
+    NA_character_
+  )
+
+}
+
+stop_pattern <-
+  c("ct\\.?:", "dep\\.", "t\\.:") %>%
+  paste0(collapse = "|") %>%
+  paste0("(", ., ").*")
+
+levels <-
+  admin_regions %>%
+  tidyr::drop_na(unique_index) %>%
+  dplyr::select(dplyr::starts_with("level")) %>%
+  tidyr::unite("level", dplyr::everything(), sep = "|", na.rm = TRUE) %>%
+  magrittr::extract2("level") %>%
+  stringr::str_split("\\|", simplify = TRUE) %>%
+  as.data.frame() %>%
+  mutate_all(list(~ na_if(., ""))) %>%
+  dplyr::mutate(dplyr::across(.fns = function(x) {
+    stringr::str_replace(x, stop_pattern, "")
+  }))
+
+levels_sub <-
+  levels %>%
+  dplyr::slice_head(n = 5000)
+
+
+
+
+result_all_levels <-
+  levels_sub %>%
+  plyr::colwise(.fun = result_function)(.) %>%
+  tidyr::unite("capital", dplyr::everything(), sep = "|", na.rm = TRUE) %>%
+  cbind(., levels_sub)
+
+
+
+
+
+country_codelist <-
+  countrycode::codelist
+
+
+
+
+
+
+
+
+
+
+
+
+all_levels_tibble <- result_all_levels %>% tidyr::unite("level", dplyr::everything(), na.rm = TRUE)
+
+
+
+
+
+
+
+
+stop_pattern <-
+  c("dep\\.", "ct\\.\\:", "t\\.\\:") %>%
+  paste0(".*", collapse = "|")
+
+admin_levels_mod <-
+  admin_levels %>%
+  dplyr::mutate(dplyr::across(.fns = function(x) {
+    stringr::str_replace(x, stop_pattern, "")
+  }))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# countries_mod <-
+#   countries %>%
+#   dplyr::mutate(
+#     country = dplyr::case_when(
+#       stringr::str_detect(country, "China") ~ "China",
+#       stringr::str_detect(country, "Namibia") ~ "Namibia, Boswana, South Africa, Lesotho",
+#       stringr::str_detect(country, "Ehtiopia") ~ "Ehtiopia, Erythrea, Djibouti",
+#       stringr::str_detect(country, "Indonesia") ~ "Indonesia",
+#       TRUE ~ as.character(country)
+#     )
+#   ) %>%
+#   dplyr::distinct()
 
 
 
@@ -96,35 +294,6 @@ admin_split <-
 
 
 
-admin_levels <-
-  admin_regions %>%
-  tidyr::drop_na(unique_index) %>%
-  dplyr::select(dplyr::starts_with("level")) %>%
-  tidyr::unite(
-    "level2",
-    dplyr::starts_with("level2"),
-    sep = ",",
-    na.rm = TRUE
-  ) %>%
-  tidyr::unite(
-    "level3",
-    dplyr::starts_with("level3"),
-    sep = ",",
-    na.rm = TRUE
-  ) %>%
-  tidyr::unite(
-    "level4",
-    dplyr::starts_with("level4"),
-    sep = ",",
-    na.rm = TRUE
-  ) %>%
-  tidyr::unite(
-    "level5",
-    dplyr::starts_with("level5"),
-    sep = ",",
-    na.rm = TRUE
-  ) %>%
-  dplyr::distinct()
 
 
 
@@ -132,26 +301,8 @@ admin_levels <-
 
 
 
-country_pattern <-
-  countrycode::codelist %>%
-  dplyr::select(country.name.en, iso3c) %>%
-  mutate_all(list(~ na_if(., ""))) %>%
-  tidyr::drop_na(iso3c) %>%
-  dplyr::mutate(
-    country.name.en = stringr::str_replace(country.name.en, "\\(.*\\)", ""),
-    n_chars = nchar(country.name.en)
-  ) %>%
-  dplyr::filter(
-    stringr::str_detect(country.name.en, "Island", negate = TRUE)
-  ) %>%
-  dplyr::arrange(dplyr::desc(n_chars)) %>%
-  magrittr::extract2("country.name.en") %>%
-  stringi::stri_trans_general("latin-ascii") %>%
-  stringr::str_replace_all(
-    c("\u0027" = "\u0027", "\u2019" = "\u0027", "\u02BC" = "\u0027", "\u00B4" = "\u0027"),
-  ) %>%
-  paste0(collapse = "|") %>%
-  paste0("^(", ., ")$")
+
+
 
 
 
@@ -251,7 +402,35 @@ t1 <- stringr::str_detect()
 
 
 
-
+admin_levels <-
+  admin_regions %>%
+  tidyr::drop_na(unique_index) %>%
+  dplyr::select(dplyr::starts_with("level")) %>%
+  tidyr::unite(
+    "level2",
+    dplyr::starts_with("level2"),
+    sep = ",",
+    na.rm = TRUE
+  ) %>%
+  tidyr::unite(
+    "level3",
+    dplyr::starts_with("level3"),
+    sep = ",",
+    na.rm = TRUE
+  ) %>%
+  tidyr::unite(
+    "level4",
+    dplyr::starts_with("level4"),
+    sep = ",",
+    na.rm = TRUE
+  ) %>%
+  tidyr::unite(
+    "level5",
+    dplyr::starts_with("level5"),
+    sep = ",",
+    na.rm = TRUE
+  ) %>%
+  dplyr::distinct()
 
 
 

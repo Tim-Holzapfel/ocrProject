@@ -16,20 +16,12 @@ read_excel_files <- function(input_path,
                              input_startpage,
                              input_endpage) {
 
-  # Suppress those annoying "New names:" messages
-
-
   # input_path <- "D:/ocrProject/test_environment/excel_files/Truhart3new.p1254to1291.SouthEastAsia_edited_1.xlsx"
 
-
-  #concat <- openxlsx::read.xlsx(input_path, colNames = FALSE)
-
-concat <-
-  readxl::read_xlsx(
-    path = input_path,
-    col_names = FALSE,
-    col_types = "text",
-    .name_repair = "minimal"
+  concat <- openxlsx::read.xlsx(
+    input_path,
+    colNames = FALSE,
+    skipEmptyRows = FALSE
   )
 
   # Not all of the excel files contain a "references" column,

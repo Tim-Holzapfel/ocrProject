@@ -35,7 +35,7 @@ gen_base_dataset <- function() {
     # variables of type string.
 
     base_dataset_init <-
-      furrr::future_pmap_dfr(input_list, read_excel_files) %>%
+      purrr::pmap_dfr(input_list, read_excel_files) %>%
       string_squish() %>%
       dplyr::mutate(
         ruler = gsub("I11", "III", ruler),
@@ -44,6 +44,7 @@ gen_base_dataset <- function() {
         N = dplyr::row_number()
       )
 
+    data.table::setDT(base_dataset_init)
 
     # This function takes a roman numeral as argument, replaces it with an
     # Arabic number and finally returns the month the roman numeral represented
