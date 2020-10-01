@@ -338,7 +338,6 @@ library(dplyr)
 stepsize <- 10000
 
 for (i in seq(from = 1, to = nrow(geonames_africa), by = stepsize)) {
-
   print(i)
 
   geonames_join_loop <-
@@ -348,21 +347,21 @@ for (i in seq(from = 1, to = nrow(geonames_africa), by = stepsize)) {
     geonames_join_loop$alternatenames %>%
     stringr::str_split(",", simplify = TRUE) %>%
     as.data.frame() %>%
-    mutate_all(list(~na_if(.,""))) %>%
+    mutate_all(list(~ na_if(., ""))) %>%
     cbind(geonames_join_loop[, c("latitude", "longitude", "country")]) %>%
     tidyr::pivot_longer(
       data = .,
       cols = dplyr::starts_with("V"),
       values_drop_na = TRUE
     ) %>%
-    dplyr::filter(xfun::is_ascii(value) ==  TRUE) %>%
+    dplyr::filter(xfun::is_ascii(value) == TRUE) %>%
     dplyr::select(countryname = value, latitude, longitude, country)
 
   geonames_join_loop_concat <-
-    rbind(geonames_join_loop_concat,
-          geonames_join_longer
-          )
-
+    rbind(
+      geonames_join_loop_concat,
+      geonames_join_longer
+    )
 }
 
 geonames_join_longer_sum <-
@@ -371,7 +370,8 @@ geonames_join_longer_sum <-
   dplyr::summarise(
     latitude = mean(latitude),
     longitude = mean(longitude),
-    .groups = "drop")
+    .groups = "drop"
+  )
 
 
 
@@ -395,7 +395,8 @@ saveRDS(geonames_join_longer_sum, "test_environment/data/geonames_africa.RDS", c
 
 
 (city_result_index <- stringr::str_which(
-  geonames_join_longer_sum$countryname, "Ilorin"))
+  geonames_join_longer_sum$countryname, "Ilorin"
+))
 
 result <- geonames_join_longer_sum[city_result_index, ]
 

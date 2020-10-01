@@ -5,6 +5,8 @@
 #'
 #' @return header_data_corrected
 #'
+#' @export
+#'
 removing_invalid_ids <- function() {
   # Integration point: after gen_header() because then the header rows are gone
   # which makes correcting the regent ids a lot easier.

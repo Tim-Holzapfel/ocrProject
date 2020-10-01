@@ -7,6 +7,8 @@ base_dataset_environ <- new.env(parent = emptyenv())
 #'
 #' @return input_data
 #'
+#' @export
+#'
 gen_base_dataset <- function() {
 
   # Only run function if the dataset inside the environment

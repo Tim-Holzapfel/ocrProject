@@ -136,7 +136,6 @@ result_function <- function(x) {
     string_extract,
     NA_character_
   )
-
 }
 
 stop_pattern <-

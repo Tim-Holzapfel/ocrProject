@@ -7,6 +7,8 @@
 #' @param dev_mode When set to TRUE stops the execution early and returns the
 #'   intermediate dataset required for testing
 #'
+#' @export
+#'
 gen_header <- function(dev_mode = FALSE) {
 
   # Sometimes part of the ruler column was mistakenly put into the Reference
@@ -61,7 +63,8 @@ gen_header <- function(dev_mode = FALSE) {
 
   header_cor <-
     header %>%
-    dplyr::slice(header_index) %>% # select rows containing the header
+    dplyr::slice(header_index) %>%
+    # select rows containing the header
     dplyr::filter(
       stringi::stri_detect_regex(region, "^\\d{1,4}\\s?[A-Z][a-z]+") |
         stringi::stri_detect_regex(country, "^[A-Z]{1}[A-z]+.*\\d{1,4}$")
@@ -125,7 +128,8 @@ gen_header <- function(dev_mode = FALSE) {
       page = zoo::na.locf(page, na.rm = FALSE),
       id = gsub(" ", "", id), # id can't contain empty spaces except headers!
     ) %>%
-    dplyr::slice(-header_index) %>% # Remove rows containing the header
+    dplyr::slice(-header_index) %>%
+    # Remove rows containing the header
     dplyr::arrange(continent, startpage, page) # Very important!
 
   # The last part, the sorting is very important because the page order is not

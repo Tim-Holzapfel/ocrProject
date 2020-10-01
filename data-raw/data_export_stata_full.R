@@ -62,4 +62,3 @@ Hmisc::label(data_export) <-
 
 
 haven::write_dta(data_export, path = "data/regents_of_nations_full.dta", version = 14)
-

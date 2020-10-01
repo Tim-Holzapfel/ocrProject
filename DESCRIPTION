@@ -5,31 +5,30 @@ Authors@R:
     person(given = "Tim",
            family = "Holzapfel",
            role = c("aut", "cre"),
-           email = "timholzapfel@outlook.com",
-           comment = c(ORCID = "0000-0002-2019-520X"))
+           email = "TimHolzapfel@outlook.com")
 Description: What the package does (one paragraph).
-License: CC BY-NC-ND 4.0 + file LICENSE
-URL: https://github.com/Tim-Lukas-H/ocrProject
-BugReports: https://github.com/Tim-Lukas-H/ocrProject/issues
+License: MIT + file LICENSE
 Encoding: UTF-8
-Language: en-US
+Language: en
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 4.0.0)
 Imports: 
+    countrycode,
+    data.table,
     dplyr,
+    magrittr,
+    openxlsx,
+    plyr,
+    purrr,
+    rlang,
+    rstudioapi,
     stringi,
     stringr,
     tibble,
-    XML,
-    openxlsx,
     tidyr,
-    data.table,
-    purrr,
-    rlang,
-    magrittr,
-    zoo,
     tidyselect,
-    rstudioapi
+    XML,
+    zoo

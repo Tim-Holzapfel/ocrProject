@@ -10,16 +10,8 @@
 
 What the package does (one paragraph).
 }
-\seealso{
-Useful links:
-\itemize{
-  \item \url{https://github.com/Tim-Lukas-H/ocrProject}
-  \item Report bugs at \url{https://github.com/Tim-Lukas-H/ocrProject/issues}
-}
-
-}
 \author{
-\strong{Maintainer}: Tim Holzapfel \email{timholzapfel@outlook.com} (\href{https://orcid.org/0000-0002-2019-520X}{ORCID})
+\strong{Maintainer}: Tim Holzapfel \email{TimHolzapfel@outlook.com}
 
 }
 \keyword{internal}

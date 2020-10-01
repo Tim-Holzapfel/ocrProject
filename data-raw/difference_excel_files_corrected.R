@@ -44,27 +44,3 @@ corrected_tbl <- corrected_files["value_sub"]
 
 
 t1 <- fuzzyjoin::stringdist_anti_join(not_corrected_tbl, corrected_tbl)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

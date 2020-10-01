@@ -4,6 +4,8 @@
 #'   including the length of the reign, the start and end year (if given) and
 #'   the century and decade the ruler ruled in.
 #'
+#' @export
+#'
 gen_reign_summary <- function() {
   base_data_set <- gen_deathyear()
 
@@ -56,5 +58,4 @@ gen_reign_summary <- function() {
   )
 
   return(reign_data_final)
-
 }

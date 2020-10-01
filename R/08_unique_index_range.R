@@ -6,8 +6,9 @@ admin_environ <- new.env(parent = emptyenv())
 #' @description Function to determine and return the unique index level of
 #'   all administrative ares
 #'
+#' @export
+#'
 gen_unique_index_range <- function() {
-
   requireNamespace("data.table")
 
   for (j in 1:5) {
@@ -115,7 +116,6 @@ gen_unique_index_range <- function() {
   }
 
   return(index_names)
-
 }
 
 

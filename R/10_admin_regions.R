@@ -10,8 +10,9 @@
 #'   rulers and the second data set consists only of the administrative areas
 #'   (so the second dataset is basically everything but the rulers)
 #'
+#' @export
+#'
 gen_admin_regions <- function() {
-
   base_dataset <-
     gen_group_id() %>%
     dplyr::ungroup() %>%
@@ -138,8 +139,4 @@ gen_admin_regions <- function() {
     dplyr::relocate(id, id_group, period, ruler, tidyselect::all_of(names_ruler_data))
 
   return(ruler_final)
-
-
 }
-
-

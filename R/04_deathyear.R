@@ -3,6 +3,8 @@
 #'
 #' @description Generating the death year
 #'
+#' @export
+#'
 gen_deathyear <- function() {
 
   # Regular Expression pattern to locate the death year. It looks for the
@@ -178,15 +180,14 @@ gen_deathyear <- function() {
           stringi::stri_detect_regex(id, "^\\d{3}$", negate = TRUE) ~ as.integer(NA),
           !is.na(birthyear_l) ~ as.integer(1),
           TRUE ~ as.integer(0)
-
-      )
+        )
     )
 
   return(df_final_full)
 }
 
 
-#options(enhancedView.standard_view = FALSE)
+# options(enhancedView.standard_view = FALSE)
 
 
 

@@ -13,10 +13,12 @@ data_export <- removing_invalid_ids() %>%
   dplyr::select(-any_of(names_drop)) %>%
   dplyr::rename(regent = ruler, region = continent_region) %>%
   tidyr::drop_na(id) %>%
-  dplyr::relocate(id, period, regent, continent, region, country,
-                  decade, century, half_cen, birthyear_l, birthyear_u,
-                  deathyear_l, deathyear_u, age_l, age_u, birthyear_known,
-                  reign_start, reign_end, reign_length)
+  dplyr::relocate(
+    id, period, regent, continent, region, country,
+    decade, century, half_cen, birthyear_l, birthyear_u,
+    deathyear_l, deathyear_u, age_l, age_u, birthyear_known,
+    reign_start, reign_end, reign_length
+  )
 
 
 
