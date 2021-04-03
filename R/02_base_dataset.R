@@ -24,7 +24,7 @@ gen_base_dataset <- function() {
     overview_data <- gen_overview()
 
     input_list <- list(
-      input_path = overview_data[["excel_file"]],
+      input_path = overview_data[["dir_path"]],
       input_continent = overview_data[["continent"]],
       input_continent_region = overview_data[["continent_region"]],
       input_startpage = overview_data[["startpage"]],

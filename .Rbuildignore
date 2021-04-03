@@ -3,6 +3,8 @@
 ^test_environment$
 ^data$
 ^geonames$
+^Truhart$
+^Truhart\_old$
 [.]Rmd$
 [.]user$
 [.]Rproj$

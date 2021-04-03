@@ -3,6 +3,8 @@
 #' @description The most computational expansive, this function assigns the
 #'   individual territories/districts to the rulers.
 #'
+#' @author Tim Holzapfel
+#'
 #' @details # General idea
 #'
 #'   The general idea is to compare two distinct data sets, in this case subsets

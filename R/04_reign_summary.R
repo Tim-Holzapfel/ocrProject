@@ -1,8 +1,12 @@
-#' Reign Summary
+#' @title Reign Summary
 #'
 #' @description This function generates a summary about the reign of the regents
 #'   including the length of the reign, the start and end year (if given) and
 #'   the century and decade the ruler ruled in.
+#'
+#' @author Tim Holzapfel
+#'
+#' @importFrom rlang .data
 #'
 #' @export
 #'
@@ -26,36 +30,24 @@ gen_reign_summary <- function() {
 
   reign_data <-
     base_data_set %>%
-    ruler_subset() %>%
     dplyr::mutate(
-      reign_start = stringr::str_extract(period, "\\d{3,4}") %>%
+      reign_start = stringr::str_extract(.data$period, "\\d{3,4}") %>%
         as.numeric(),
-      reign_end = stringi::stri_extract_last_regex(period, "(?<=-)\\d{3,4}") %>%
+      reign_end = stringi::stri_extract_last_regex(.data$period, "(?<=-)\\d{3,4}") %>%
         as.numeric(),
-      reign_start = dplyr::na_if(reign_start, reign_end),
-      reign_length = reign_end - reign_start,
+      reign_start = dplyr::na_if(.data$reign_start, .data$reign_end),
+      reign_length = .data$reign_end - .data$reign_start,
       decade = dplyr::case_when(
-        !is.na(reign_start) ~ round(reign_start, -1),
-        !is.na(reign_end) ~ round(reign_end, -1)
+        !is.na(reign_start) ~ round(.data$reign_start, -1),
+        !is.na(reign_end) ~ round(.data$reign_end, -1)
       ),
       century = dplyr::case_when(
-        !is.na(reign_start) ~ round(reign_start, -2),
-        !is.na(reign_end) ~ round(reign_end, -2)
+        !is.na(.data$reign_start) ~ round(.data$reign_start, -2),
+        !is.na(.data$reign_end) ~ round(.data$reign_end, -2)
       ),
-      half_cen = round(as.integer(reign_start) / 50) * 50,
-      .after = period
+      half_cen = round(as.integer(.data$reign_start) / 50) * 50,
+      .after = .data$period
     )
 
-
-  # variable containing the names of the newly created variables. Necessary for
-  # the coming join and export
-  names_diff <- names(reign_data)[names(reign_data) %notin% names(base_data_set)]
-
-  reign_data_final <- dplyr::full_join(
-    base_data_set,
-    dplyr::select(reign_data, c(names_diff, N)),
-    by = "N"
-  )
-
-  return(reign_data_final)
+  return(reign_data)
 }

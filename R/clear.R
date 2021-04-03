@@ -1,6 +1,4 @@
-#' Clear Workspace and Console
-#'
-#' @export
+#' @title Clear Workspace and Console
 #'
 clear <- function() {
   remove(list = ls(pos = 1), pos = 1)

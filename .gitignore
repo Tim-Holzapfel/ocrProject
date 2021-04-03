@@ -7,7 +7,8 @@ $ cat .gitignore
 *.RDA
 
 
-
+Truhart/
+Truhart_old/
 zwischenablage/
 test_environment/
 
@@ -67,3 +68,5 @@ data/
 
 # excel files
 *.xlsx
+deprecated/check_meta_data.R
+deprecated/01_gen_overview.txt

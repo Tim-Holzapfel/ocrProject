@@ -310,277 +310,100 @@ codelist_continent <-
 geonames_join <-
   dplyr::left_join(geonames_join, codelist_continent, by = "country")
 
-geonames_africa <-
-  geonames_join %>%
-  dplyr::filter(continent == "Africa") %>%
-  dplyr::arrange(country, name)
 
-geonames_join_sub <-
-  geonames_join %>%
-  dplyr::slice_head(n = 10000)
-
-rm(geonames_join)
-gc()
-
-
-library(dplyr)
-
-geonames_join_loop_concat <-
-  tibble::tibble(
-    countryname = character(),
-    latitude = numeric(),
-    longitude = numeric(),
-    country = character()
-  )
-
-library(dplyr)
-
-stepsize <- 10000
-
-for (i in seq(from = 1, to = nrow(geonames_africa), by = stepsize)) {
-  print(i)
-
-  geonames_join_loop <-
-    geonames_africa[i:(i + (stepsize - 1)), ]
-
-  geonames_join_longer <-
-    geonames_join_loop$alternatenames %>%
-    stringr::str_split(",", simplify = TRUE) %>%
-    as.data.frame() %>%
-    mutate_all(list(~ na_if(., ""))) %>%
-    cbind(geonames_join_loop[, c("latitude", "longitude", "country")]) %>%
-    tidyr::pivot_longer(
-      data = .,
-      cols = dplyr::starts_with("V"),
-      values_drop_na = TRUE
-    ) %>%
-    dplyr::filter(xfun::is_ascii(value) == TRUE) %>%
-    dplyr::select(countryname = value, latitude, longitude, country)
-
-  geonames_join_loop_concat <-
-    rbind(
-      geonames_join_loop_concat,
-      geonames_join_longer
-    )
-}
-
-geonames_join_longer_sum <-
-  geonames_join_loop_concat %>%
-  dplyr::group_by(countryname, country) %>%
-  dplyr::summarise(
-    latitude = mean(latitude),
-    longitude = mean(longitude),
-    .groups = "drop"
-  )
-
-
-
-saveRDS(geonames_join_longer_sum, "test_environment/data/geonames_africa.RDS", compress = FALSE)
-
-
-
-# geonames_cities_final <-
-#   geonames_join[, list(
-#     name = alternatenames,
-#     feature_code,
-#     latitude,
-#     longitude,
-#     country,
-#     region,
-#     region23
-#   )]
-
-
-
-
-
-(city_result_index <- stringr::str_which(
-  geonames_join_longer_sum$countryname, "Ilorin"
-))
-
-result <- geonames_join_longer_sum[city_result_index, ]
-
-
-
-
-
-
-
-
-# geonames_join_longer <-
-#   geonames_join_sub$alternatenames %>%
-#   stringr::str_split(",", simplify = TRUE) %>%
-#   as.data.frame() %>%
-#   mutate_all(list(~na_if(.,""))) %>%
-#   cbind(geonames_join_sub[, c("latitude", "longitude", "country")]) %>%
-#   tidyr::pivot_longer(
-#     data = .,
-#     cols = dplyr::starts_with("V"),
-#     values_drop_na = TRUE
-#   ) %>%
-#   dplyr::filter(xfun::is_ascii(value) ==  TRUE) %>%
-#   dplyr::select(countryname = value, latitude, longitude, country) %>%
-#   dplyr::arrange(country, countryname)
-
-
-#
-# geonames_join_longer$city1 <-
-#   geonames_join_longer$countryname %>%
-#   stringi::stri_trans_general("latin-ascii") %>%
-#   stringr::str_replace_all(
-#     c("\u0027" = "\u0027", "\u2019" = "\u0027", "\u02BC" = "\u0027", "\u00B4" = "\u0027"),
-#   )
-
-# geonames_join_longer_sum <-
-#   geonames_join_longer %>%
-#   dplyr::group_by(countryname, country) %>%
-#   dplyr::summarise(
-#     latitude = mean(latitude),
-#     longitude = mean(longitude),
-#     .groups = "drop")
-
-
-
-#
-#
-# geonames_join_longer <-
-#   geonames_join$alternatenames %>%
-#   stringr::str_split(",", simplify = TRUE) %>%
-#   as.data.frame() %>%
-#   mutate_all(list(~na_if(.,""))) %>%
-#   cbind(geonames_join[, c("latitude", "longitude", "country")]) %>%
-#   tidyr::pivot_longer(
-#     data = .,
-#     cols = dplyr::starts_with("V"),
-#     values_drop_na = TRUE
-#   ) %>%
-#   dplyr::filter(xfun::is_ascii(value) ==  TRUE) %>%
-#   dplyr::select(countryname = value, latitude, longitude, country)
-#
-#
-#
-#
-#
-# t1_sum <-
-#   t1 %>%
-#   dplyr::group_by(countryname, country) %>%
-#   dplyr::summarise(latitude = mean(latitude), longitude = mean(longitude))
-#
-#
-
-
-
-
-
-
-
-
-
-# saveRDS(data_cities_mod, file = "output/geonames_cities.RDS", compress = FALSE)
-
-#' The table 'alternate names'
-#'
-#' @param alternateNameId the id of this alternate name, int
-#'
-#' @param geonameid geonameId referring to id in table 'geoname', int
-#'
-#' @param isolanguage iso 639 language code 2- or 3-characters; 4-characters
-#'   'post' for postal codes and 'iata','icao' and faac for airport codes,
-#'   fr_1793 for French Revolution names,  abbr for abbreviation, link to a
-#'   website (mostly to wikipedia), wkdt for the wikidataid, varchar(7)
-#'
-#' @param alternatename alternate name or name variant, varchar(400)
-#'
-#' @param isPreferredName '1', if this alternate name is an official/preferred
-#'   name
-#'
-#' @param isShortName '1', if this is a short name like 'California' for 'State
-#'   of California'
-#'
-#' @param isColloquial '1', if this alternate name is a colloquial or slang
-#'   term. Example: 'Big Apple' for 'New York'.
-#'
-#' @param isHistoric '1', if this alternate name is historic and was used in the
-#'   past. Example 'Bombay' for 'Mumbai'.
-#'
-#' @param from from period when the name was used
-#'
-#' @param to to period when the name was used
-
-alternatenames_col_names <-
-  c(
-    "alternateNameId", "geonameid", "isolanguage", "alternatename",
-    "isPreferredName", "isShortName", "isColloquial", "isHistoric",
-    "from", "to"
-  )
-
-
-
-alternatenames <- data.table::fread(
-  file = find_files("alternateNamesV2.txt"),
-  sep = "\t",
-  encoding = "UTF-8",
-  col.names = alternatenames_col_names,
-  key = "geonameid"
-)
-
-
-
-
-alternatenames <- data.table::fread(
-  file = find_files("alternateNamesV2.txt"),
-  sep = "\t",
-  select = c(2, 3, 4),
-  encoding = "UTF-8",
-  col.names = c("geonameid", "isolanguage", "alternate_name"),
-  key = "geonameid"
-)
-
-isolang <-
-  alternatenames %>%
-  dplyr::distinct(isolanguage, .keep_all = TRUE) %>%
-  tidyr::drop_na(isolanguage) %>%
-  dplyr::mutate(
-    alternate_name = stringi::stri_trans_general(alternate_name, "latin-ascii"),
-  )
-
-n_lang <- dim(isolang)[1]
-
-ascii_test_vec <- vector(length = n_lang)
-
-for (i in 1:dim(isolang)[1]) {
-  ascii_test_vec[i] <- all(utf8ToInt(isolang$alternate_name[i]) %in% 1:126)
-}
-
-# Names of all the languages that are in another writing system (non-ascii) and
-# are therefore not useful for matching the Truhart names since Truhart only
-# uses ascii
-
-non_ascii_lang <- isolang[which(!ascii_test_vec), ] %>%
-  magrittr::extract2("isolanguage") %>%
-  c(., "post", "iata", "icao", "faac", "link", "wkdt") # other non-useful information
-
-alternatenames <- alternatenames[isolanguage %notin% non_ascii_lang]
-
-alter_name_df <-
-  alternatenames[, .(
-    alternate_name = stringi::stri_trans_general(alternate_name, "latin-ascii"),
-    geonameid
-  )]
-
-alter_name_unique <- unique(alter_name_df)
-
-alternate_sum <- alter_name_unique[, .(alternate_name = toString(alternate_name)), by = geonameid]
 
 
 #   ____________________________________________________________________________
-#   Merging both tables together                                            ####
+#   Select Continent                                                        ####
 
-geonames_final <-
-  merge(geonames_sub, alternate_sum,
-    by = "geonameid",
-    all.x = TRUE, all.y = FALSE
-  )
+continent_list <- unique(geonames_join$continent) %>% stringi::stri_remove_empty_na()
+
+for (j in continent_list) {
+
+  print(j)
+
+  geonames_africa <-
+    geonames_join %>%
+    dplyr::filter(continent == j) %>%
+    dplyr::arrange(country, name)
+
+  geonames_join_sub <-
+    geonames_join %>%
+    dplyr::slice_head(n = 10000)
+
+  # rm(geonames_join)
+  # gc()
 
 
-saveRDS(geonames_final, "output/geonames_cities_exp.RDS", compress = FALSE)
+  library(dplyr)
+
+  geonames_join_loop_concat <-
+    tibble::tibble(
+      countryname = character(),
+      latitude = numeric(),
+      longitude = numeric(),
+      country = character()
+    )
+
+  library(dplyr)
+
+  stepsize <- 10000
+
+  for (i in seq(from = 1, to = nrow(geonames_africa), by = stepsize)) {
+    print(i)
+
+    geonames_join_loop <-
+      geonames_africa[i:(i + (stepsize - 1)), ]
+
+    geonames_join_longer <-
+      geonames_join_loop$alternatenames %>%
+      stringr::str_split(",", simplify = TRUE) %>%
+      as.data.frame() %>%
+      mutate_all(list(~ na_if(., ""))) %>%
+      cbind(geonames_join_loop[, c("latitude", "longitude", "country")]) %>%
+      tidyr::pivot_longer(
+        data = .,
+        cols = dplyr::starts_with("V"),
+        values_drop_na = TRUE
+      ) %>%
+      dplyr::filter(xfun::is_ascii(value) == TRUE) %>%
+      dplyr::select(countryname = value, latitude, longitude, country)
+
+    geonames_join_loop_concat <-
+      rbind(
+        geonames_join_loop_concat,
+        geonames_join_longer
+      )
+  }
+
+  geonames_join_longer_sum <-
+    geonames_join_loop_concat %>%
+    dplyr::group_by(countryname, country) %>%
+    dplyr::summarise(
+      latitude = mean(latitude),
+      longitude = mean(longitude),
+      .groups = "drop"
+    )
+
+  file_path_name <- file.path("output", paste0("geonames_", j, ".fst"))
+
+  fst::write.fst(x = geonames_join_longer_sum, path = file_path_name)
+
+  rm(geonames_join_longer_sum)
+  gc()
+
+}
+
+file.path()
+
+#saveRDS(geonames_cities, "test_environment/data/geonames_africa.RDS", compress = FALSE)
+
+
+
+
+
+for (i in continent_list) {
+  file_path_name <- file.path("output", paste0("geonames_", i, ".fst"))
+
+  print(t1)
+}

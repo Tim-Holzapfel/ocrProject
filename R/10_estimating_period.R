@@ -10,6 +10,15 @@ gen_estimation <- function() {
   # TODO theoretically, this file is a modification of the "reign_summary.R" file
   # and, eventually, the both should be combined.
 
+
+  remove_pattern <- c(
+    "regent", "dep", "minister", "pretender", "region",
+    "de facto", "civil", "chief", "in [A-z]{3,}"
+  ) %>%
+    paste0(collapse = "|")
+
+
+
   base_data <-
     gen_country() %>%
     dplyr::relocate(id_group, id, period, ruler) %>%
@@ -17,17 +26,40 @@ gen_estimation <- function() {
     # It is important to replace NA_character_ with the string "NA" because
     # otherwise the function to filter "pretender" periods is going also to delete
     # rows with missing period values.
-    tidyr::replace_na(list(period = "NA")) %>%
+    tidyr::replace_na(list(period = "")) %>%
     dplyr::filter(
-      stringr::str_detect(period, "[pP]retender", negate = TRUE)
+      stringr::str_detect(
+        period,
+        stringr::regex(remove_pattern, ignore_case = TRUE),
+        negate = TRUE
+      )
+    ) %>%
+    dplyr::filter(
+      stringr::str_detect(period, "\\d+")
     ) %>%
     dplyr::mutate(
       period = dplyr::if_else(
-        period == "NA",
+        period == "",
         NA_character_,
         as.character(period)
       )
     )
+
+  # period = stringr::str_replace_all(
+  #   period,
+  #   "[XVI]+(?=\\s?\\.)",
+  #   roman2numeric
+  # )
+
+
+  period_data <-
+    base_data %>%
+    dplyr::select(period) %>%
+    dplyr::mutate(
+      period = stringr::str_replace_all(period, "\\d+", "")
+    ) %>%
+    string_squish() %>%
+    dplyr::distinct()
 
   # dplyr::select(id_group, id, ruler, period) %>%
 
@@ -63,29 +95,23 @@ gen_estimation <- function() {
       reign_end = as.integer(reign_end),
       decade = dplyr::if_else(
         !is.na(reign_start),
-        round(reign_start, -1),
+        ceiling(reign_start / 10) * 10,
         NA_real_
       ),
       century = dplyr::if_else(
         !is.na(reign_start),
-        round(reign_start, -2),
+        ceiling(reign_start / 100) * 100,
         NA_real_
       ),
       half_cen = dplyr::if_else(
         !is.na(reign_start),
-        round(as.integer(reign_start) / 50) * 50,
+        ceiling(reign_start / 50) * 50,
         NA_real_
       )
     )
 
   return(z_base_data_mod)
-
 }
-
-
-
-
-
 
 
 
@@ -115,14 +141,3 @@ gen_estimation <- function() {
 #
 #
 #
-
-
-
-
-
-
-
-
-
-
-

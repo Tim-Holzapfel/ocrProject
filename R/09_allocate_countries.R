@@ -25,13 +25,13 @@ gen_country <- function() {
     # of the countrycode package.
     additional_countries <-
       c(
-        "Erythrea", "Turkestan", "Arabia", "Burma", "Malayan Peninsula",
-        "Singapur", "Kalimantan", "Kapunduk", "Hawaii", "Melanesia",
+        "Erythrea", "Turkestan", "Burma", "Malayan Peninsula",
+        "Singapur", "Kalimantan", "Kapunduk", "Hawaii",
         "Mali\\sStates", "Timuktu", "Cote D'Ivoire",
         "ZAIRE", "Congo\\s(Zaire)", "Somaliland"
       )
 
-    country_pattern <-
+    country_list <-
       countrycode::codelist %>%
       dplyr::select(country = country.name.en, iso3c) %>%
       replace_empty() %>%
@@ -40,7 +40,9 @@ gen_country <- function() {
         country = stringr::str_replace(country, "\\(.*\\)", ""),
         n_chars = nchar(country)
       ) %>%
+      string_squish() %>%
       dplyr::arrange(dplyr::desc(n_chars)) %>%
+      dplyr::select(-n_chars) %>%
       dplyr::mutate(
         country = dplyr::case_when(
           stringr::str_detect(country, "Congo") ~ "Congo",
@@ -49,7 +51,10 @@ gen_country <- function() {
           TRUE ~ as.character(country)
         )
       ) %>%
-      dplyr::distinct(country, .keep_all = TRUE) %>%
+      dplyr::distinct(country, .keep_all = TRUE)
+
+    country_pattern <-
+      country_list %>%
       magrittr::extract2("country") %>%
       stringi::stri_trans_general("latin-ascii") %>%
       c(additional_countries) %>%
@@ -95,7 +100,8 @@ gen_country <- function() {
 
 
     admin_base_data <-
-      gen_admin_regions()
+      gen_admin_regions() %>%
+      dplyr::relocate(id, id_group, id_old, unique_index, original_sort)
 
     # Main purpose is to check whether a group id level exists.
     admin_group_ids <-
@@ -105,6 +111,8 @@ gen_country <- function() {
       ) %>%
       dplyr::arrange(id_group, id) %>%
       dplyr::select(id_group, id, period, ruler, page, excel_sheet)
+
+    index_unique <- which(is.na(admin_base_data$unique_index))
 
     admin_regions <-
       admin_base_data %>%
@@ -162,11 +170,11 @@ gen_country <- function() {
     capital_select <-
       stringr::str_split(z_results_fill$country, "\\|", simplify = TRUE) %>%
       as.data.frame() %>%
+      string_squish() %>%
       dplyr::select(country = V1) %>%
       dplyr::mutate(
         country = dplyr::case_when(
           stringr::str_detect(country, "Malayan Peninsula") ~ "Thailand",
-          stringr::str_detect(country, "Micronesia") ~ "Federated States of Micronesia",
           stringr::str_detect(country, "Timuktu") ~ "Mali",
           stringr::str_detect(country, "Turkestan") ~ "Kazakhstan",
           stringr::str_detect(country, "Zaire") ~ "Congo",
@@ -174,20 +182,41 @@ gen_country <- function() {
           stringr::str_detect(country, "Kalimantan") ~ "Indonesia",
           stringr::str_detect(country, "Kapunduk") ~ "Indonesia",
           stringr::str_detect(country, "Somaliland") ~ "Somalia",
+          stringr::str_detect(country, "Burma") ~ "Myanmar",
+          stringr::str_detect(country, "Singapur") ~ "Singapore",
+          stringr::str_detect(country, "Hawaii") ~ "United States",
+          stringr::str_detect(country, "Cote D'ivoire") ~ "Côte d’Ivoire",
           TRUE ~ as.character(country)
         )
       ) %>%
-      cbind(group_id = z_results_fill$group_id)
+      cbind(group_id = z_results_fill$group_id) %>%
+      dplyr::left_join(., country_list, by = "country") %>%
+      dplyr::rename(iso3 = iso3c)
+
+    # unique_countries <-
+    #   capital_select %>%
+    #   dplyr::select(country) %>%
+    #   dplyr::distinct() %>%
+    #   tidyr::drop_na()
 
     #   ____________________________________________________________________________
     #   Combining results                                                       ####
+
+    descriptive_rows <-
+      admin_base_data %>%
+      dplyr::slice(index_unique) %>%
+      dplyr::mutate(iso3 = NA_character_)
 
     admin_regions_id <-
       admin_regions %>%
       cbind(group_id = admin_levels$group_id) %>%
       dplyr::select(-country) %>%
       dplyr::left_join(., capital_select, by = "group_id") %>%
-      dplyr::relocate(country)
+      dplyr::relocate(country) %>%
+      dplyr::select(-c(country_id, group_id)) %>%
+      rbind(descriptive_rows)
+
+
 
     rlang::env_bind(country_data_environ, allocated_countries = admin_regions_id)
   }

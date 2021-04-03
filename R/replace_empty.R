@@ -4,8 +4,6 @@
 #'
 #' @param data_file Dataframe to be modified
 #'
-#' @export
-#'
 replace_empty <- function(data_file) {
   return_file <-
     data_file %>%

@@ -4,6 +4,8 @@
 #'   country of the ruler. To extract these information, use is made of the fact
 #'   that the left contains the region and the right header the country.
 #'
+#' @author Tim Holzapfel
+#'
 #' @param dev_mode When set to TRUE stops the execution early and returns the
 #'   intermediate dataset required for testing
 #'
@@ -112,10 +114,9 @@ gen_header <- function(dev_mode = FALSE) {
   }
 
   # The variables region and country are assigned to the rulers in a "cascading"
-  # down manner, meaning the last non-missing value is carried forward.
-  # ABBYY, the text recognition program sometimes makes the mistake that it
-  # takes the number 1 for the small letter L. This next step corrects for
-  # that mistake.
+  # down manner, meaning the last non-missing value is carried forward. ABBYY,
+  # the text recognition program sometimes makes the mistake that it takes the
+  # number 1 for the small letter L. This next step corrects for that mistake.
 
   merge_data_with_header <-
     dplyr::left_join(base_dataset, header_final, by = "N") %>%

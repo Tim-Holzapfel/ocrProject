@@ -3,6 +3,8 @@
 #'
 #' @description Generating the death year
 #'
+#' @importFrom rlang .data
+#'
 #' @export
 #'
 gen_deathyear <- function() {

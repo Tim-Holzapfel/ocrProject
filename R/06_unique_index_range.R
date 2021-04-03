@@ -53,7 +53,18 @@ gen_unique_index_range <- function() {
             lin_com = xid + yid,
             lin_com_inv = abs(xid - yid)
           ) %>%
-          dplyr::distinct(lin_com, lin_com_inv, .keep_all = TRUE)
+          dplyr::distinct(lin_com, lin_com_inv, .keep_all = TRUE) %>%
+          dplyr::filter(
+            lin_com_inv == 1
+          ) %>%
+          dplyr::mutate(
+            long_range_id = dplyr::if_else(
+              dplyr::lead(xid) == yid, 1, 0
+            )
+          ) %>%
+          dplyr::filter(
+            long_range_id == 0
+          )
 
         overlap_index <- level_overlap$xid %>% unique()
 
@@ -89,7 +100,18 @@ gen_unique_index_range <- function() {
             lin_com = xid + yid,
             lin_com_inv = abs(xid - yid)
           ) %>%
-          dplyr::distinct(lin_com, lin_com_inv, .keep_all = TRUE)
+          dplyr::distinct(lin_com, lin_com_inv, .keep_all = TRUE) %>%
+          dplyr::filter(
+            lin_com_inv == 1
+          ) %>%
+          dplyr::mutate(
+            long_range_id = dplyr::if_else(
+              dplyr::lead(xid) == yid, 1, 0
+            )
+          ) %>%
+          dplyr::filter(
+            long_range_id == 0
+          )
 
         overlap_index <- level_overlap$xid %>% unique()
 

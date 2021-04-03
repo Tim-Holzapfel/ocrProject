@@ -2,8 +2,6 @@
 #'
 #' @param data_file Name of file to search for
 #'
-#' @export
-#'
 find_files <- function(data_file) {
   found_file <- list.files(
     pattern = paste0("^", data_file, "$"),

@@ -24,10 +24,9 @@ read_excel_files <- function(input_path,
     skipEmptyRows = FALSE
   )
 
-  # Not all of the excel files contain a "references" column,
-  # since this column was only implemented later on.
-  # In case the content of the fourth column got mistakenly inserted in the
-  # fifth or sixth column
+  # Not all of the excel files contain a "references" column, since this column
+  # was only implemented later on. In case the content of the fourth column got
+  # mistakenly inserted in the fifth or sixth column
 
   if (ncol(concat) <= 3) {
     concat$references <- as.character(NA)

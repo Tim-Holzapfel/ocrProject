@@ -2,33 +2,29 @@ Package: ocrProject
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Tim",
-           family = "Holzapfel",
+    person(given = "First",
+           family = "Last",
            role = c("aut", "cre"),
-           email = "TimHolzapfel@outlook.com")
+           email = "first.last@example.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: What the package does (one paragraph).
-License: MIT + file LICENSE
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
 Encoding: UTF-8
-Language: en
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Depends: 
     R (>= 4.0.0)
 Imports: 
-    countrycode,
-    data.table,
+    desc,
     dplyr,
     magrittr,
-    openxlsx,
-    plyr,
-    purrr,
+    renv,
     rlang,
-    rstudioapi,
     stringi,
     stringr,
     tibble,
     tidyr,
-    tidyselect,
-    XML,
-    zoo
+    usethis,
+    XML

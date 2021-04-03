@@ -5,7 +5,7 @@
 #'
 #' @return header_data_corrected
 #'
-#' @export
+#' @author Tim Holzapfel
 #'
 removing_invalid_ids <- function() {
   # Integration point: after gen_header() because then the header rows are gone
