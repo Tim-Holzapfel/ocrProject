@@ -1,12 +1,12 @@
 Package: ocrProject
-Title: What the Package Does (One Line, Title Case)
+Title: ocrProject
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Tim",
            family = "Holzapfel",
            role = c("aut", "cre"),
            email = "TimHolzapfel@outlook.com")
-Description: What the package does (one paragraph).
+Description: ocrPackage are scripts and functions which can be used to create a single, structured file from the individual Truhart scans.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Language: en
