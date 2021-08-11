@@ -9,6 +9,10 @@ gen_meta_data(input_path)
 \arguments{
 \item{input_path}{Path to the excel files}
 }
+\value{
+Data frame with a single row and column names and values
+corresponding to the meta data found in the respective excel-file.
+}
 \description{
 Generate Meta Data
 }

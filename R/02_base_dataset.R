@@ -26,9 +26,9 @@ gen_base_dataset <- function() {
     input_list <- list(
       input_path = overview_data[["dir_path"]],
       input_continent = overview_data[["continent"]],
-      input_continent_region = overview_data[["continent_region"]],
-      input_startpage = overview_data[["startpage"]],
-      input_endpage = overview_data[["endpage"]]
+      input_region = overview_data[["region"]],
+      input_start_page = overview_data[["start_page"]],
+      input_end_page = overview_data[["end_page"]]
     )
 
     # Concatenating the individual sheets to one big R file. Furthermore,
@@ -47,12 +47,6 @@ gen_base_dataset <- function() {
       )
 
     data.table::setDT(base_dataset_init)
-
-    # This function takes a roman numeral as argument, replaces it with an
-    # Arabic number and finally returns the month the roman numeral represented
-    # based on the Arabic number
-
-    roman_to_alpha <- function(x) month.abb[roman2numeric(x)]
 
     # Truhart had a rather specific style when it comes to writing dates as
     # Truhart used roman numerals to specify the month. This can be very
@@ -96,7 +90,8 @@ gen_base_dataset <- function() {
         # replace all special, possibly language dependent character with their
         # ascii representation
         ruler = stringi::stri_trans_general(ruler, "latin-ascii")
-      )
+      ) %>%
+      dplyr::rename(continent_region = region)
 
     rlang::env_bind(base_dataset_environ, base_dataset = base_dataset_final)
   }

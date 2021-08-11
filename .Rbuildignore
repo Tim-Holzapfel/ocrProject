@@ -1,7 +1,9 @@
 ^data-raw$
+^deprecated$
 ^zwischenablage$
 ^test_environment$
 ^data$
+^geo_data$
 ^geonames$
 ^Truhart$
 ^Truhart\_old$

@@ -100,7 +100,7 @@ gen_country <- function() {
 
 
     admin_base_data <-
-      gen_admin_regions() %>%
+      gen_capital() %>%
       dplyr::relocate(id, id_group, id_old, unique_index, original_sort)
 
     # Main purpose is to check whether a group id level exists.

@@ -150,15 +150,15 @@ gen_deathyear <- function() {
 
   # Generating control data set to see which ages are negative
 
-  control_data_negative_age <-
-    death_year_sub_age %>%
-    dplyr::filter(
-      age_l < 0
-    )
+  # control_data_negative_age <-
+  #   death_year_sub_age %>%
+  #   dplyr::filter(
+  #     age_l < 0
+  #   )
 
   death_year_final <-
     death_year_sub_age %>%
-    dplyr::filter(age_l > 0 | is.na(age_l)) %>% # a negative age is a computation error
+    #dplyr::filter(age_l > 0 | is.na(age_l)) %>% # a negative age is a computation error
     dplyr::select(-c("year_base", "year_u", "year_l")) # removing aux variables
 
   # Subset of the "death_year_final" dataset that only contains observations

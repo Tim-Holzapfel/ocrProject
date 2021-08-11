@@ -4,17 +4,17 @@
 #'
 #' @param input_path Path to the excel files
 #' @param input_continent Name of the continent the Excel file refers to
-#' @param input_continent_region Name of the continent region the Excel file refers to
-#' @param input_startpage Starting page of the Excel file
-#' @param input_endpage Ending page of the Excel file
+#' @param input_region Name of the continent region the Excel file refers to
+#' @param input_start_page Starting page of the Excel file
+#' @param input_end_page Ending page of the Excel file
 #'
 #' @return Excel sheet in data frame format
 #'
 read_excel_files <- function(input_path,
                              input_continent,
-                             input_continent_region,
-                             input_startpage,
-                             input_endpage) {
+                             input_region,
+                             input_start_page,
+                             input_end_page) {
 
   # input_path <- "D:/ocrProject/test_environment/excel_files/Truhart3new.p1254to1291.SouthEastAsia_edited_1.xlsx"
 
@@ -46,9 +46,9 @@ read_excel_files <- function(input_path,
     concat %>%
     dplyr::mutate(
       continent = input_continent,
-      continent_region = input_continent_region,
-      startpage = input_startpage,
-      endpage = input_endpage,
+      region = input_region,
+      start_page = input_start_page,
+      end_page = input_end_page,
       excel_sheet = input_path,
       excel_row = paste0("A", 1:dplyr::n()) # Makes it easier to open in Excel
     ) %>%

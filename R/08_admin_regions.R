@@ -138,7 +138,7 @@ gen_admin_regions <- function() {
   ruler_final <-
     rbind(ruler_full, ruler_data) %>%
     dplyr::arrange(original_sort) %>%
-    dplyr::relocate(id, id_group, period, ruler, tidyselect::all_of(names_ruler_data))
+    dplyr::relocate(id, id_group, id_valid, period, ruler, tidyselect::all_of(names_ruler_data))
 
   return(ruler_final)
 }

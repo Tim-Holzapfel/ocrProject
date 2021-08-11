@@ -36,7 +36,7 @@ gen_overview <- function() {
 
     # List of available Excel files
 
-    excel_paths <- find_excel_paths(path = project_root)
+    excel_paths <- find_excel_paths(path = truhart_dir)
 
     # It's easier to allocate the individual continent_regions to the rulers
     # when the relevant information are stored inside the excel sheets as meta
@@ -49,20 +49,7 @@ gen_overview <- function() {
 
     overview_environ$overview <-
       purrr::map_dfr(excel_paths, gen_meta_data) %>%
-      dplyr::mutate(
-        startpage =
-          stringi::stri_extract_last_regex(
-            .data$dir_path,
-            "(?<=p)\\d+(?=to|-|_)"
-          ) %>% as.integer(),
-        endpage =
-          stringi::stri_extract_last_regex(
-            .data$dir_path,
-            "(?<=\\d{1,4}(to|-|_))\\d+"
-          ) %>% as.integer(),
-        dir_path = normalizePath(.data$dir_path)
-      ) %>%
-      dplyr::arrange(.data$continent, .data$startpage) %>%
+      dplyr::arrange(.data$continent, .data$start_page) %>%
       # Remove leading, trailing and consecutive white spaces.
       string_squish()
   }

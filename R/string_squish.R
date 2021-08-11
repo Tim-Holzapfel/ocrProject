@@ -6,8 +6,6 @@
 #' @param dataframe_tb dataframe that should be squished
 #'
 #' @importFrom rlang .data
-#' @importFrom dplyr where
-#'
 #'
 #' @note One thing one has to be careful about is that "str_squish" will return
 #'   variables it has been applied upon as type character. This function

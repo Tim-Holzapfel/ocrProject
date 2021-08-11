@@ -120,8 +120,8 @@ gen_header <- function(dev_mode = FALSE) {
 
   merge_data_with_header <-
     dplyr::left_join(base_dataset, header_final, by = "N") %>%
-    dplyr::relocate(region, country, page, startpage, endpage) %>%
-    dplyr::arrange(continent, startpage) %>%
+    dplyr::relocate(region, country, page, start_page, end_page) %>%
+    dplyr::arrange(continent, start_page) %>%
     dplyr::mutate(
       region = zoo::na.locf(region, na.rm = FALSE),
       country = zoo::na.locf(country, na.rm = FALSE),
@@ -131,7 +131,7 @@ gen_header <- function(dev_mode = FALSE) {
     ) %>%
     dplyr::slice(-header_index) %>%
     # Remove rows containing the header
-    dplyr::arrange(continent, startpage, page) # Very important!
+    dplyr::arrange(continent, start_page, page) # Very important!
 
   # The last part, the sorting is very important because the page order is not
   # always correct inside the excel files, meaning that even though the correct

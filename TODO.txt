@@ -1,0 +1,1 @@
+-> Country variable does not always display an actual country and often also contains missing observations.

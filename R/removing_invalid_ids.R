@@ -71,9 +71,12 @@ removing_invalid_ids <- function() {
 
   # TODO Find another solution instead of simply dropping the missing IDs
 
+
+
+
   corrected_data <-
     complete_data %>%
-    dplyr::slice(-invalid_ids$unique_id) %>%
+    #dplyr::slice(-invalid_ids$unique_id) %>%
     dplyr::mutate(
       # Binary variable indicating whether the observation is an actual ruler or
       # a time period.
@@ -88,8 +91,14 @@ removing_invalid_ids <- function() {
       id_old = id,
       id = stringr::str_extract(id, "[^\\/]*$"),
       .after = 1
-    ) %>%
-    tidyr::drop_na(id)
+    )
+    # tidyr::drop_na(id)
+
+
+  corrected_data$id_valid <- TRUE
+
+  corrected_data[invalid_ids$unique_id, "id_valid"] <- FALSE
+
 
   return(corrected_data)
 }
