@@ -10,7 +10,7 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 [![R build
 status](https://github.com/Tim-Lukas-H/ocrProject/workflows/R-CMD-check/badge.svg)](https://github.com/Tim-Lukas-H/ocrProject/actions)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2022--08--11-yellowgreen.svg)](/commits/master)
-[![](https://img.shields.io/badge/version-0.0.0.9000-blue)](https://github.com/Tim-Lukas-H/ocrProject)
+[![](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/Tim-Lukas-H/ocrProject)
 <!-- badges: end -->
 
 The goal of ocrProject is to create workable datasets from the
